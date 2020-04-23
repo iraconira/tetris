@@ -1,0 +1,41 @@
+$height: 3em;
+$width: $height;
+
+.app {
+  box-sizing: border-box;
+  * {
+    box-sizing: border-box;
+  }
+  display: block;
+  width: 100%;
+  font-size: 10px;
+
+  .simpletimer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px 10px;
+    opacity: 0.4;
+    color: grey;
+    font-size: 12px;
+  }
+
+  .board {
+    display: block;
+    margin: 2em;
+    border: 1px solid grey;
+    width: $width * 10;
+    height: $height * 20;
+
+    .row {
+      display: flex;
+      width: $width * 10;
+      height: $height;
+      .hub {
+        width: $width;
+        height: $width;
+        border: 1px dashed grey;
+      }
+    }
+  }
+}
