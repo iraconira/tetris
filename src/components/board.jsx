@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 // deep clone for prevent old state overriting the modified state
 import cloneDeep from 'lodash/cloneDeep'
-import { getFigure, getCenteredFigure } from '../utils/figures'
+import { getFigure, getCenteredFigure, twistFigure } from '../utils/figures'
 import Row from './row'
 
 class Board extends Component {
@@ -35,6 +35,8 @@ class Board extends Component {
         x: coord[0],
         y: coord[1],
         color,
+        figure,
+        position,
       })
     })
     return items
@@ -42,7 +44,6 @@ class Board extends Component {
 
   setRandomFigure = () => {
     const currentFigure = this.generateFigure('T', 'left', 'green')
-    console.log(currentFigure)
     this.setState({ currentFigure })
   }
 
@@ -63,6 +64,12 @@ class Board extends Component {
     })
 
     return style
+  }
+
+  handleKeyDown = (_e) => {
+    if (_e.keyCode === 32) return this.rotateFigure()
+
+    return this.moveFigure(_e)
   }
 
   moveFigure = (_e) => {
@@ -105,7 +112,6 @@ class Board extends Component {
         ) {
           console.log('match! ', [figUnit.x, figUnit.y])
           coincidences = true
-        } else {
         }
       })
     })
@@ -120,13 +126,20 @@ class Board extends Component {
     }
   }
 
+  rotateFigure = () => {
+    const { currentFigure } = this.state
+    const twistedFigure = twistFigure(currentFigure)
+    console.log(twistedFigure)
+    this.setState({ currentFigure: twistedFigure })
+  }
+
   render() {
     const { rows, cols } = this.state
     const rowsArray = Array.from(new Array(rows).keys())
     const colArray = Array.from(new Array(cols).keys())
 
     return (
-      <div className='board' onKeyDown={this.moveFigure} tabIndex='0'>
+      <div className='board' onKeyDown={this.handleKeyDown} tabIndex='0'>
         {rowsArray.map((row, y) => (
           <div key={String(row + y)} className='row'>
             {colArray.map((col, x) => (

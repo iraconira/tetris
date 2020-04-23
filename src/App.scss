@@ -7,7 +7,7 @@ $width: $height;
     box-sizing: border-box;
   }
   display: block;
-  width: 100%;
+  width: fit-content;
   font-size: 10px;
 
   .simpletimer {
@@ -24,8 +24,8 @@ $width: $height;
     display: block;
     margin: 2em;
     border: 1px solid grey;
-    width: $width * 10;
-    height: $height * 20;
+    width: fit-content;
+    height: auto;
 
     .row {
       display: flex;
