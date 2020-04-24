@@ -128,7 +128,7 @@ const figures = {
       [1, 2],
     ],
     left: [
-      [0, 0],
+      [2, 0],
       [0, 1],
       [1, 1],
       [2, 1],
@@ -208,13 +208,11 @@ function getRandomFigure(cols) {
   ]
 
   randomFigure.push(randomPosition)
-  console.log(randomFigure)
 
   let items = []
   const figure = getFigure(randomFigure[0])
 
   figure.forEach((coord) => {
-    console.log('coord: ', coord)
     items.push({
       x: coord[0] + cols / 2 - 2,
       y: coord[1],

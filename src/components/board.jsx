@@ -16,30 +16,124 @@ class Board extends Component {
       currentFigure: [],
       board: [
         {},
-        // { x: 3, y: 3, color: 'red' },
-        // { x: 4, y: 3, color: 'red' },
-        // { x: 5, y: 3, color: 'red' },
-        // { x: 3, y: 7, color: 'pink' },
-        // { x: 3, y: 8, color: 'pink' },
+        // { x: 3, y: 6, color: 'red' },
+        // { x: 4, y: 7, color: 'red' },
+        // { x: 5, y: 2, color: 'red' },
+        //
+        // { x: 0, y: 4, color: 'pink' },
+        // { x: 1, y: 4, color: 'pink' },
+        // { x: 2, y: 4, color: 'pink' },
+        // { x: 3, y: 4, color: 'pink' },
+        // { x: 4, y: 4, color: 'pink' },
+        // { x: 5, y: 4, color: 'pink' },
+        // { x: 6, y: 4, color: 'pink' },
+        // { x: 7, y: 4, color: 'pink' },
+        // { x: 8, y: 4, color: 'pink' },
+        // { x: 9, y: 4, color: 'pink' },
+        // //
+        // { x: 0, y: 5, color: 'yellow' },
+        // { x: 1, y: 5, color: 'yellow' },
+        // { x: 2, y: 5, color: 'yellow' },
+        // { x: 3, y: 5, color: 'yellow' },
+        // { x: 4, y: 5, color: 'yellow' },
+        // { x: 5, y: 5, color: 'yellow' },
+        // { x: 6, y: 5, color: 'yellow' },
+        // { x: 7, y: 5, color: 'yellow' },
+        // { x: 8, y: 5, color: 'yellow' },
+        // { x: 9, y: 5, color: 'yellow' },
+        // //
+        // { x: 0, y: 9, color: 'brown' },
+        // { x: 1, y: 9, color: 'brown' },
+        // { x: 2, y: 1, color: 'brown' },
+        // { x: 3, y: 9, color: 'brown' },
+        // { x: 4, y: 9, color: 'brown' },
+        // { x: 5, y: 9, color: 'brown' },
+        // { x: 6, y: 9, color: 'brown' },
+        // { x: 7, y: 9, color: 'brown' },
+        // { x: 8, y: 9, color: 'brown' },
+        // { x: 9, y: 9, color: 'brown' },
+        // //
+        // { x: 0, y: 10, color: 'blue' },
+        // { x: 1, y: 1, color: 'blue' },
+        // { x: 2, y: 10, color: 'blue' },
+        // { x: 3, y: 10, color: 'blue' },
+        // { x: 4, y: 10, color: 'blue' },
+        // { x: 5, y: 10, color: 'blue' },
+        // { x: 6, y: 10, color: 'blue' },
+        // { x: 7, y: 10, color: 'blue' },
+        // { x: 8, y: 10, color: 'blue' },
+        // { x: 9, y: 10, color: 'blue' },
       ],
     }
   }
 
   componentDidMount() {
-    this.setRandomFigure()
+    // this.checkFullRows()
+    // this.setRandomFigure()
   }
 
   startGame = () => {
+    this.setRandomFigure()
     this.boardRef.current.focus()
     this.startTimer()
+  }
+
+  // deleteRow = () => {}
+
+  checkFullRows = () => {
+    const { rows, cols, board } = { ...this.state }
+
+    let emptyArray = Array.from(Array(rows).keys())
+    let allRows = emptyArray.map((row) => [])
+
+    // generate all rows
+    board.forEach((hub) => {
+      allRows.forEach((row, index) => {
+        if (index === hub.y) {
+          allRows[index].push([hub.x, hub.y])
+        }
+      })
+      // console.log('hub; ', allRows)
+    })
+
+    // get the row where all cols are filled
+    const matchings = allRows.filter((row) => row.length === cols)
+    console.log('yea, match: ', matchings)
+
+    // delete the rows that are filled
+    matchings.forEach((rowToDelete) => {
+      if (rowToDelete && rowToDelete.length) {
+        rowToDelete.forEach((match) => {
+          board.forEach((item) => {
+            if (item.x === match[0][0]) {
+              board.pop(item)
+            }
+          })
+        })
+      }
+      console.log('board > ', board)
+      console.log('rowToDeleteYcoor: ', rowToDelete[0][1])
+      board.forEach((item) => {
+        if (item.y < rowToDelete[0][1]) {
+          item.y++
+        }
+      })
+
+      // drop all rows that were over the ful line
+    })
+
+    // setTimeout(() => {
+    this.setState({ board })
+    // }, 2000)
   }
 
   startTimer = () => {
     const { timeInterval } = this.state
 
     setInterval(() => {
-      const { board, currentFigure } = { ...this.state }
+      this.checkFullRows()
 
+      const { board, currentFigure } = { ...this.state }
       const droppedFigure = cloneDeep(currentFigure)
 
       droppedFigure.forEach((figUnit) => {
@@ -50,7 +144,7 @@ class Board extends Component {
         Math,
         currentFigure.map((figUnit) => figUnit.y)
       )
-      console.log(maxY)
+      // console.log(maxY)
 
       const collision = this.detectCollisions(board, droppedFigure)
 
@@ -62,7 +156,7 @@ class Board extends Component {
 
         this.setRandomFigure()
 
-        console.log('GAME OVER')
+        console.log('END')
         return
       }
 
@@ -91,7 +185,6 @@ class Board extends Component {
   }
 
   setRandomFigure = () => {
-    // let currentFigure = this.generateFigure('Z', 'up', 'green')
     let currentFigure = getRandomFigure(this.state.cols)
     this.setState({ currentFigure })
   }
@@ -148,7 +241,6 @@ class Board extends Component {
     movedFigure.forEach((fig) => (fig[coord] += increment))
 
     const collision = this.detectCollisions(board, movedFigure)
-    console.log('collision: ', collision)
     return this.updateFigureStateAfterMoving(
       currentFigure,
       movedFigure,
@@ -167,7 +259,7 @@ class Board extends Component {
           figUnit.x > this.state.cols - 1 ||
           figUnit.y > this.state.rows - 1
         ) {
-          console.log('collision!! ', [figUnit.x, figUnit.y])
+          // console.log('collision!! ', [figUnit.x, figUnit.y])
           collision = true
         }
       })
