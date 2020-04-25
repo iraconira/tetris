@@ -31,7 +31,7 @@ class Board extends Component {
         // { x: 8, y: 4, color: 'pink' },
         // { x: 9, y: 4, color: 'pink' },
         // //
-        // { x: 0, y: 5, color: 'yellow' },
+        // { x: 0, y: 3, color: 'yellow' },
         // { x: 1, y: 5, color: 'yellow' },
         // { x: 2, y: 5, color: 'yellow' },
         // { x: 3, y: 5, color: 'yellow' },
@@ -44,25 +44,36 @@ class Board extends Component {
         // //
         // { x: 0, y: 9, color: 'brown' },
         // { x: 1, y: 9, color: 'brown' },
-        // { x: 2, y: 1, color: 'brown' },
+        // { x: 2, y: 9, color: 'brown' },
         // { x: 3, y: 9, color: 'brown' },
         // { x: 4, y: 9, color: 'brown' },
-        // { x: 5, y: 9, color: 'brown' },
+        // { x: 5, y: 7, color: 'brown' },
         // { x: 6, y: 9, color: 'brown' },
         // { x: 7, y: 9, color: 'brown' },
         // { x: 8, y: 9, color: 'brown' },
         // { x: 9, y: 9, color: 'brown' },
         // //
         // { x: 0, y: 10, color: 'blue' },
-        // { x: 1, y: 1, color: 'blue' },
+        // { x: 1, y: 10, color: 'blue' },
         // { x: 2, y: 10, color: 'blue' },
         // { x: 3, y: 10, color: 'blue' },
         // { x: 4, y: 10, color: 'blue' },
-        // { x: 5, y: 10, color: 'blue' },
-        // { x: 6, y: 10, color: 'blue' },
+        // { x: 5, y: 1, color: 'blue' },
+        // { x: 6, y: 1, color: 'blue' },
         // { x: 7, y: 10, color: 'blue' },
         // { x: 8, y: 10, color: 'blue' },
         // { x: 9, y: 10, color: 'blue' },
+        // //
+        // { x: 0, y: 0, color: 'lightblue' },
+        // { x: 1, y: 0, color: 'lightblue' },
+        // { x: 2, y: 0, color: 'lightblue' },
+        // { x: 3, y: 0, color: 'lightblue' },
+        // { x: 4, y: 0, color: 'lightblue' },
+        // { x: 5, y: 0, color: 'lightblue' },
+        // { x: 6, y: 0, color: 'lightblue' },
+        // { x: 7, y: 0, color: 'lightblue' },
+        // { x: 8, y: 0, color: 'lightblue' },
+        // { x: 9, y: 0, color: 'lightblue' },
       ],
     }
   }
@@ -102,17 +113,19 @@ class Board extends Component {
 
     // delete the rows that are filled
     matchings.forEach((rowToDelete) => {
-      if (rowToDelete && rowToDelete.length) {
+      if (rowToDelete && rowToDelete.length === cols) {
         rowToDelete.forEach((match) => {
+          // console.log('match: ', match)
           board.forEach((item) => {
-            if (item.x === match[0][0]) {
-              board.pop(item)
+            if (item.x === match[0] && item.y === match[1]) {
+              console.log('deleted item: ', item)
+              board.splice(board.indexOf(item), 1)
             }
           })
         })
       }
-      console.log('board > ', board)
-      console.log('rowToDeleteYcoor: ', rowToDelete[0][1])
+      // console.log('board > ', board)
+      // console.log('rowToDeleteYcoor: ', rowToDelete[0][1])
       board.forEach((item) => {
         if (item.y < rowToDelete[0][1]) {
           item.y++
