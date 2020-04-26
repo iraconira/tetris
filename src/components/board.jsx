@@ -13,45 +13,14 @@ class Board extends Component {
       rows: 20,
       cols: 10,
       timeInterval: 1000,
+      paused: false,
+      displayStartButton: true,
       currentFigure: [],
       board: [
         {},
         // { x: 3, y: 6, color: 'red' },
         // { x: 4, y: 7, color: 'red' },
         // { x: 5, y: 2, color: 'red' },
-        //
-        // { x: 0, y: 4, color: 'pink' },
-        // { x: 1, y: 4, color: 'pink' },
-        // { x: 2, y: 4, color: 'pink' },
-        // { x: 3, y: 4, color: 'pink' },
-        // { x: 4, y: 4, color: 'pink' },
-        // { x: 5, y: 4, color: 'pink' },
-        // { x: 6, y: 4, color: 'pink' },
-        // { x: 7, y: 4, color: 'pink' },
-        // { x: 8, y: 4, color: 'pink' },
-        // { x: 9, y: 4, color: 'pink' },
-        // //
-        // { x: 0, y: 3, color: 'yellow' },
-        // { x: 1, y: 5, color: 'yellow' },
-        // { x: 2, y: 5, color: 'yellow' },
-        // { x: 3, y: 5, color: 'yellow' },
-        // { x: 4, y: 5, color: 'yellow' },
-        // { x: 5, y: 5, color: 'yellow' },
-        // { x: 6, y: 5, color: 'yellow' },
-        // { x: 7, y: 5, color: 'yellow' },
-        // { x: 8, y: 5, color: 'yellow' },
-        // { x: 9, y: 5, color: 'yellow' },
-        // //
-        // { x: 0, y: 9, color: 'brown' },
-        // { x: 1, y: 9, color: 'brown' },
-        // { x: 2, y: 9, color: 'brown' },
-        // { x: 3, y: 9, color: 'brown' },
-        // { x: 4, y: 9, color: 'brown' },
-        // { x: 5, y: 7, color: 'brown' },
-        // { x: 6, y: 9, color: 'brown' },
-        // { x: 7, y: 9, color: 'brown' },
-        // { x: 8, y: 9, color: 'brown' },
-        // { x: 9, y: 9, color: 'brown' },
         // //
         // { x: 0, y: 10, color: 'blue' },
         // { x: 1, y: 10, color: 'blue' },
@@ -84,12 +53,23 @@ class Board extends Component {
   }
 
   startGame = () => {
+    let { displayStartButton } = this.state
     this.setRandomFigure()
     this.boardRef.current.focus()
     this.startTimer()
+
+    displayStartButton = !displayStartButton
+    this.setState({ displayStartButton })
   }
 
-  // deleteRow = () => {}
+  stopGame = () => {
+    let { paused, displayStartButton } = this.state
+    paused = !paused
+    displayStartButton = !displayStartButton
+    this.setState({ paused, displayStartButton })
+    this.startTimer()
+    this.boardRef.current.focus()
+  }
 
   checkFullRows = () => {
     const { rows, cols, board } = { ...this.state }
@@ -143,21 +123,25 @@ class Board extends Component {
   startTimer = () => {
     const { timeInterval } = this.state
 
-    setInterval(() => {
+    const gameIsRunning = setInterval(() => {
       this.checkFullRows()
 
+      if (this.state.paused) {
+        clearInterval(gameIsRunning)
+      }
       const { board, currentFigure } = { ...this.state }
       const droppedFigure = cloneDeep(currentFigure)
 
-      droppedFigure.forEach((figUnit) => {
-        figUnit.y++
-      })
+      if (!this.state.paused) {
+        droppedFigure.forEach((figUnit) => {
+          figUnit.y++
+        })
+      }
 
       const maxY = Math.max.apply(
         Math,
         currentFigure.map((figUnit) => figUnit.y)
       )
-      // console.log(maxY)
 
       const collision = this.detectCollisions(board, droppedFigure)
 
@@ -166,10 +150,7 @@ class Board extends Component {
           board: [...board, ...currentFigure],
           currentFigure: [],
         })
-
         this.setRandomFigure()
-
-        console.log('END')
         return
       }
 
@@ -186,7 +167,7 @@ class Board extends Component {
     // const shape = getCenteredFigure(figure, position)
     const shape = getFigure(figure, position)
     shape.map((coord) => {
-      items.push({
+      return items.push({
         x: coord[0] + this.state.cols / 2 - 2,
         y: coord[1],
         color,
@@ -205,25 +186,29 @@ class Board extends Component {
   fillBg = (x, y) => {
     // set filled default items
     const { board, currentFigure } = this.state
-    let style = { background: 'transparent' }
-    board.forEach((figure) => {
+    let style = {}
+
+    const setFigureStyle = (figure) => {
       if (figure.x === x && figure.y === y) {
         style.background = figure.color
+        style.border = '1px solid black'
+        style.borderRadius = '.5em'
+        style.boxShadow = '2px 2px 2px grey'
       }
-    })
-    // set current figure
-    currentFigure.forEach((figure) => {
-      if (figure.x === x && figure.y === y) {
-        style.background = figure.color
-      }
-    })
+    }
+
+    board.forEach((figure) => setFigureStyle(figure))
+    currentFigure.forEach((figure) => setFigureStyle(figure))
 
     return style
   }
 
   handleKeyDown = (_e) => {
-    if (_e.keyCode === 32) return this.rotateFigure()
-    return this.moveFigure(_e)
+    const { paused } = this.state
+    if (!paused) {
+      if (_e.keyCode === 32) return this.rotateFigure()
+      return this.moveFigure(_e)
+    }
   }
 
   moveFigure = (_e) => {
@@ -291,10 +276,26 @@ class Board extends Component {
   }
 
   rotateFigure = () => {
-    const { board, currentFigure } = this.state
-    const twistedFigure = twistFigure(currentFigure)
+    const { board, currentFigure, cols } = this.state
+    let twistedFigure = twistFigure(currentFigure)
 
-    const collision = this.detectCollisions(board, twistedFigure)
+    let collision = this.detectCollisions(board, twistedFigure)
+
+    const LRCollision = twistedFigure[0].x > cols / 2 ? 'R' : 'L'
+
+    const reCheckCollision = (board, twistedFigure) => {
+      if (collision) {
+        twistedFigure.forEach((figUnit, index) => {
+          LRCollision === 'L'
+            ? twistedFigure[index].x++
+            : twistedFigure[index].x--
+        })
+        collision = this.detectCollisions(board, twistedFigure)
+        return reCheckCollision(board, twistedFigure)
+      }
+    }
+    reCheckCollision(board, twistedFigure)
+
     return this.updateFigureStateAfterMoving(
       currentFigure,
       twistedFigure,
@@ -302,8 +303,24 @@ class Board extends Component {
     )
   }
 
+  injectButton = () => {
+    const { displayStartButton, paused } = this.state
+
+    let btn = ''
+
+    if (!paused && displayStartButton) {
+      btn = <button onClick={this.startGame}>Start Game</button>
+    } else if (paused) {
+      btn = <button onClick={this.stopGame}>Resume</button>
+    } else {
+      btn = <button onClick={this.stopGame}>Pause</button>
+    }
+
+    return btn
+  }
+
   render() {
-    const { rows, cols } = this.state
+    let { rows, cols } = this.state
     const rowsArray = Array.from(new Array(rows).keys())
     const colArray = Array.from(new Array(cols).keys())
 
@@ -321,17 +338,18 @@ class Board extends Component {
                 <div
                   key={String(col + x)}
                   className='hub'
+                  // className={'hub ' + this.setClass(x, y)}
                   x={x}
                   y={y}
                   style={this.fillBg(x, y)}
                 >
-                  {x},{y}
+                  {/* {x},{y} */}
                 </div>
               ))}
             </div>
           ))}
         </div>
-        <button onClick={this.startGame}>Start</button>
+        {this.injectButton()}
       </React.Fragment>
     )
   }

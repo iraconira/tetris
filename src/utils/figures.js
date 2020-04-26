@@ -8,10 +8,10 @@ const figures = {
       [2, 1],
     ],
     right: [
-      [2, 0],
+      [1, 0],
+      [0, 1],
       [1, 1],
-      [2, 1],
-      [1, 2],
+      [0, 2],
     ],
     down: [
       [0, 0],
@@ -20,37 +20,37 @@ const figures = {
       [2, 1],
     ],
     left: [
-      [2, 0],
+      [1, 0],
+      [0, 1],
       [1, 1],
-      [2, 1],
-      [1, 2],
+      [0, 2],
     ],
   },
   S: {
     color: 'yellow',
     up: [
+      [1, 0],
+      [2, 0],
+      [0, 1],
       [1, 1],
-      [2, 1],
-      [0, 2],
-      [1, 2],
     ],
     right: [
-      [1, 0],
+      [0, 0],
+      [0, 1],
       [1, 1],
-      [2, 1],
-      [2, 2],
-    ],
-    down: [
-      [1, 1],
-      [2, 1],
-      [0, 2],
       [1, 2],
     ],
-    left: [
+    down: [
       [1, 0],
+      [2, 0],
+      [0, 1],
       [1, 1],
-      [2, 1],
-      [2, 2],
+    ],
+    left: [
+      [0, 0],
+      [0, 1],
+      [1, 1],
+      [1, 2],
     ],
   },
   J: {
@@ -214,11 +214,13 @@ function getRandomFigure(cols) {
 
   figure.forEach((coord) => {
     items.push({
+      // x: coord[0],
       x: coord[0] + cols / 2 - 2,
       y: coord[1],
       figure: randomFigure[0],
       color: randomFigure[1],
-      position: randomFigure[2],
+      position: 'up',
+      // position: randomFigure[2],
     })
   })
   return items

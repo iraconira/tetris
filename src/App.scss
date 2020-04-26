@@ -34,7 +34,10 @@ $width: $height;
       .hub {
         width: $width;
         height: $width;
-        border: 1px dashed grey;
+        // border: unset;
+      }
+      .figure {
+        border: 2px solid black;
       }
     }
   }
