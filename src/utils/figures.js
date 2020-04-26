@@ -220,7 +220,6 @@ function getRandomFigure(cols) {
       figure: randomFigure[0],
       color: randomFigure[1],
       position: 'up',
-      // position: randomFigure[2],
     })
   })
   return items

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 // deep clone for prevent old state overriting the modified state
 import cloneDeep from 'lodash/cloneDeep'
 import { getFigure, getRandomFigure, twistFigure } from '../utils/figures'
+import NextFigure from './nextFigure'
+import Greed from './greed'
 
 class Board extends Component {
   constructor() {
@@ -16,6 +18,7 @@ class Board extends Component {
       paused: false,
       displayStartButton: true,
       currentFigure: [],
+      nextFigure: [],
       board: [
         {},
         // { x: 3, y: 6, color: 'red' },
@@ -57,6 +60,7 @@ class Board extends Component {
     this.setRandomFigure()
     this.boardRef.current.focus()
     this.startTimer()
+    setInterval(() => this.checkFullRows(), 100)
 
     displayStartButton = !displayStartButton
     this.setState({ displayStartButton })
@@ -84,12 +88,10 @@ class Board extends Component {
           allRows[index].push([hub.x, hub.y])
         }
       })
-      // console.log('hub; ', allRows)
     })
 
     // get the row where all cols are filled
     const matchings = allRows.filter((row) => row.length === cols)
-    console.log('yea, match: ', matchings)
 
     // delete the rows that are filled
     matchings.forEach((rowToDelete) => {
@@ -98,7 +100,7 @@ class Board extends Component {
           // console.log('match: ', match)
           board.forEach((item) => {
             if (item.x === match[0] && item.y === match[1]) {
-              console.log('deleted item: ', item)
+              // console.log('deleted item: ', item)
               board.splice(board.indexOf(item), 1)
             }
           })
@@ -122,14 +124,13 @@ class Board extends Component {
 
   startTimer = () => {
     const { timeInterval } = this.state
-
     const gameIsRunning = setInterval(() => {
-      this.checkFullRows()
-
       if (this.state.paused) {
         clearInterval(gameIsRunning)
       }
-      const { board, currentFigure } = { ...this.state }
+      const { board, currentFigure, nextFigure } = { ...this.state }
+      console.log('nexfigure: ', nextFigure[0].figure)
+      // If not next figure, take current (for game start)
       const droppedFigure = cloneDeep(currentFigure)
 
       if (!this.state.paused) {
@@ -151,6 +152,7 @@ class Board extends Component {
           currentFigure: [],
         })
         this.setRandomFigure()
+        this.setState({ currentFigure: nextFigure })
         return
       }
 
@@ -164,7 +166,6 @@ class Board extends Component {
 
   generateFigure = (figure, position, color) => {
     let items = []
-    // const shape = getCenteredFigure(figure, position)
     const shape = getFigure(figure, position)
     shape.map((coord) => {
       return items.push({
@@ -179,8 +180,11 @@ class Board extends Component {
   }
 
   setRandomFigure = () => {
-    let currentFigure = getRandomFigure(this.state.cols)
-    this.setState({ currentFigure })
+    this.setState({
+      currentFigure: getRandomFigure(this.state.cols),
+      nextFigure: getRandomFigure(this.state.cols),
+    })
+    // let nextFigure = getRandomFigure(this.state.cols)
   }
 
   fillBg = (x, y) => {
@@ -320,34 +324,20 @@ class Board extends Component {
   }
 
   render() {
-    let { rows, cols } = this.state
-    const rowsArray = Array.from(new Array(rows).keys())
-    const colArray = Array.from(new Array(cols).keys())
+    let { rows, cols, nextFigure } = this.state
 
     return (
       <React.Fragment>
+        {nextFigure && nextFigure.length && (
+          <NextFigure nextFigure={nextFigure} />
+        )}
         <div
           className='board'
           onKeyDown={this.handleKeyDown}
           tabIndex='0'
           ref={this.boardRef}
         >
-          {rowsArray.map((row, y) => (
-            <div key={String(row + y)} className='row'>
-              {colArray.map((col, x) => (
-                <div
-                  key={String(col + x)}
-                  className='hub'
-                  // className={'hub ' + this.setClass(x, y)}
-                  x={x}
-                  y={y}
-                  style={this.fillBg(x, y)}
-                >
-                  {/* {x},{y} */}
-                </div>
-              ))}
-            </div>
-          ))}
+          <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
         </div>
         {this.injectButton()}
       </React.Fragment>

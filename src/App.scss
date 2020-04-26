@@ -41,4 +41,26 @@ $width: $height;
       }
     }
   }
+  .next-figure {
+    display: block;
+    margin: 2em;
+    border: 1px solid red;
+    width: fit-content;
+    height: auto;
+
+    .row {
+      display: flex;
+      width: auto;
+      height: auto;
+      .hub {
+        width: $width/2;
+        height: $width/2;
+        // border: unset;
+      }
+      .figure {
+        border: 2px solid black;
+      }
+    }
+  }
 }
+//
