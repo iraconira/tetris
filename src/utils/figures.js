@@ -225,6 +225,22 @@ function getRandomFigure(cols) {
   return items
 }
 
+const generateFigure = (figure, color, position) => {
+  let items = []
+  const shape = getFigure(figure, position)
+  // debugger
+  shape.map((coord) => {
+    return items.push({
+      x: coord[0],
+      y: coord[1],
+      color,
+      figure,
+      position,
+    })
+  })
+  return items
+}
+
 function twistFigure(currentFigure) {
   const figUnit = currentFigure[0]
   const shapeUnit = figures[figUnit.figure][figUnit.position][0]
@@ -267,4 +283,4 @@ function twistFigure(currentFigure) {
   return finalFigure
 }
 
-export { figures, getFigure, getRandomFigure, twistFigure }
+export { figures, getFigure, getRandomFigure, generateFigure, twistFigure }

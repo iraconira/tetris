@@ -1,24 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Greed from './greed'
-import { getFigure } from '../utils/figures'
+import { generateFigure } from '../utils/figures'
 
 const NextFigure = ({ nextFigure }) => {
-  const generateFigure = (figure, color, position) => {
-    let items = []
-    const shape = getFigure(figure, position)
-    // debugger
-    shape.map((coord) => {
-      return items.push({
-        x: coord[0],
-        y: coord[1],
-        color,
-        figure,
-        position,
-      })
-    })
-    return items
-  }
-
   const fillBg = (x, y) => {
     let style = {}
 

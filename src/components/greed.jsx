@@ -4,7 +4,7 @@ const Grred = ({ rows, cols, fillBg }) => {
   const rowsArray = Array.from(new Array(rows).keys())
   const colArray = Array.from(new Array(cols).keys())
   return (
-    <>
+    <React.Fragment>
       {rowsArray.map((row, y) => (
         <div key={String(row + y)} className='row'>
           {colArray.map((col, x) => (
@@ -21,7 +21,7 @@ const Grred = ({ rows, cols, fillBg }) => {
           ))}
         </div>
       ))}
-    </>
+    </React.Fragment>
   )
 }
 

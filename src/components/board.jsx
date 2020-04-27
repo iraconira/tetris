@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 // deep clone for prevent old state overriting the modified state
 import cloneDeep from 'lodash/cloneDeep'
-import { getFigure, getRandomFigure, twistFigure } from '../utils/figures'
+import { getRandomFigure, twistFigure } from '../utils/figures'
 import NextFigure from './nextFigure'
 import Greed from './greed'
 
 class Board extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     this.boardRef = React.createRef()
 
@@ -17,6 +17,7 @@ class Board extends Component {
       timeInterval: 1000,
       paused: false,
       displayStartButton: true,
+      score: 0,
       currentFigure: [],
       nextFigure: [],
       board: [
@@ -30,8 +31,7 @@ class Board extends Component {
         // { x: 2, y: 10, color: 'blue' },
         // { x: 3, y: 10, color: 'blue' },
         // { x: 4, y: 10, color: 'blue' },
-        // { x: 5, y: 1, color: 'blue' },
-        // { x: 6, y: 1, color: 'blue' },
+        // { x: 5, y: 10, color: 'blue' },
         // { x: 7, y: 10, color: 'blue' },
         // { x: 8, y: 10, color: 'blue' },
         // { x: 9, y: 10, color: 'blue' },
@@ -51,7 +51,7 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    // this.checkFullRows()
+    // this.removeFullRows()
     // this.setRandomFigure()
   }
 
@@ -60,10 +60,12 @@ class Board extends Component {
     this.setRandomFigure()
     this.boardRef.current.focus()
     this.startTimer()
-    setInterval(() => this.checkFullRows(), 100)
+    setInterval(() => this.removeFullRows(), 100)
 
     displayStartButton = !displayStartButton
     this.setState({ displayStartButton })
+    // emit start event
+    this.props.gameStatus(false)
   }
 
   stopGame = () => {
@@ -73,9 +75,34 @@ class Board extends Component {
     this.setState({ paused, displayStartButton })
     this.startTimer()
     this.boardRef.current.focus()
+
+    // emit stop event
+    this.props.gameStatus(paused ? true : false)
   }
 
-  checkFullRows = () => {
+  incrementScore = (rows) => {
+    let score = 10
+    switch (rows) {
+      case 1:
+        break
+      case 2:
+        score *= 2
+        break
+      case 3:
+        score *= 4
+        break
+      case 4:
+        score *= 10
+        break
+      default:
+      //
+    }
+    console.table({ score: score, currentScore: this.state.score })
+
+    this.setState((prevState) => ({ score: prevState.score + score }))
+  }
+
+  removeFullRows = () => {
     const { rows, cols, board } = { ...this.state }
 
     let emptyArray = Array.from(Array(rows).keys())
@@ -92,6 +119,9 @@ class Board extends Component {
 
     // get the row where all cols are filled
     const matchings = allRows.filter((row) => row.length === cols)
+
+    //set score
+    if (matchings && matchings.length) this.incrementScore(matchings.length)
 
     // delete the rows that are filled
     matchings.forEach((rowToDelete) => {
@@ -164,27 +194,11 @@ class Board extends Component {
     }, timeInterval)
   }
 
-  generateFigure = (figure, position, color) => {
-    let items = []
-    const shape = getFigure(figure, position)
-    shape.map((coord) => {
-      return items.push({
-        x: coord[0] + this.state.cols / 2 - 2,
-        y: coord[1],
-        color,
-        figure,
-        position,
-      })
-    })
-    return items
-  }
-
   setRandomFigure = () => {
     this.setState({
       currentFigure: getRandomFigure(this.state.cols),
       nextFigure: getRandomFigure(this.state.cols),
     })
-    // let nextFigure = getRandomFigure(this.state.cols)
   }
 
   fillBg = (x, y) => {
@@ -287,14 +301,17 @@ class Board extends Component {
 
     const LRCollision = twistedFigure[0].x > cols / 2 ? 'R' : 'L'
 
+    // avoid infinite recursion when can't spin
+    let collisionTimes = 0
     const reCheckCollision = (board, twistedFigure) => {
-      if (collision) {
+      if (collision && collisionTimes <= 3) {
         twistedFigure.forEach((figUnit, index) => {
           LRCollision === 'L'
             ? twistedFigure[index].x++
             : twistedFigure[index].x--
         })
         collision = this.detectCollisions(board, twistedFigure)
+        collisionTimes++
         return reCheckCollision(board, twistedFigure)
       }
     }
@@ -328,7 +345,8 @@ class Board extends Component {
 
     return (
       <React.Fragment>
-        {nextFigure && nextFigure.length && (
+        <h1>Score: {this.state.score}</h1>
+        {nextFigure && nextFigure.length > 0 && (
           <NextFigure nextFigure={nextFigure} />
         )}
         <div
