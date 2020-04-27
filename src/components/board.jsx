@@ -15,6 +15,9 @@ class Board extends Component {
       rows: 20,
       cols: 10,
       timeInterval: 1000,
+      allTimeIntervals: [],
+      level: 1,
+      time: 0,
       paused: false,
       displayStartButton: true,
       score: 0,
@@ -36,16 +39,16 @@ class Board extends Component {
         // { x: 8, y: 10, color: 'blue' },
         // { x: 9, y: 10, color: 'blue' },
         // //
-        // { x: 0, y: 0, color: 'lightblue' },
-        // { x: 1, y: 0, color: 'lightblue' },
-        // { x: 2, y: 0, color: 'lightblue' },
-        // { x: 3, y: 0, color: 'lightblue' },
-        // { x: 4, y: 0, color: 'lightblue' },
-        // { x: 5, y: 0, color: 'lightblue' },
-        // { x: 6, y: 0, color: 'lightblue' },
-        // { x: 7, y: 0, color: 'lightblue' },
-        // { x: 8, y: 0, color: 'lightblue' },
-        // { x: 9, y: 0, color: 'lightblue' },
+        { x: 0, y: 19, color: 'lightblue' },
+        { x: 1, y: 19, color: 'lightblue' },
+        { x: 2, y: 19, color: 'lightblue' },
+        { x: 3, y: 19, color: 'lightblue' },
+        { x: 4, y: 19, color: 'lightblue' },
+        { x: 5, y: 19, color: 'lightblue' },
+        { x: 6, y: 19, color: 'lightblue' },
+        { x: 7, y: 19, color: 'lightblue' },
+        // { x: 8, y: 19, color: 'lightblue' },
+        // { x: 9, y: 19, color: 'lightblue' },
       ],
     }
   }
@@ -55,7 +58,7 @@ class Board extends Component {
     // this.setRandomFigure()
   }
 
-  startGame = () => {
+  startGame = (_e) => {
     let { displayStartButton } = this.state
     this.setRandomFigure()
     this.boardRef.current.focus()
@@ -66,9 +69,10 @@ class Board extends Component {
     this.setState({ displayStartButton })
     // emit start event
     this.props.gameStatus(false)
+    this.preventDoubleClick(_e)
   }
 
-  stopGame = () => {
+  stopGame = (_e) => {
     let { paused, displayStartButton } = this.state
     paused = !paused
     displayStartButton = !displayStartButton
@@ -78,6 +82,14 @@ class Board extends Component {
 
     // emit stop event
     this.props.gameStatus(paused ? true : false)
+    this.preventDoubleClick(_e)
+  }
+
+  preventDoubleClick = (_e) => {
+    let btn = _e.target
+    _e.stopPropagation()
+    btn.setAttribute('disabled', '')
+    setTimeout(() => btn.removeAttribute('disabled'), 1000)
   }
 
   incrementScore = (rows) => {
@@ -97,9 +109,55 @@ class Board extends Component {
       default:
       //
     }
-    console.table({ score: score, currentScore: this.state.score })
 
     this.setState((prevState) => ({ score: prevState.score + score }))
+  }
+
+  incrementSpeed = () => {
+    const { score } = this.state
+
+    let timeInterval = 1000,
+      level = 1
+    switch (true) {
+      case score >= 500:
+        timeInterval = 100
+        level = 8
+        break
+      case score >= 450:
+        timeInterval = 200
+        level = 7
+        break
+      case score >= 400:
+        timeInterval = 300
+        level = 6
+        break
+      case score >= 350:
+        timeInterval = 400
+        level = 5
+        break
+      case score >= 200:
+        timeInterval = 500
+        level = 4
+        break
+      case score >= 150:
+        timeInterval = 600
+        level = 3
+        break
+      case score >= 100:
+        timeInterval = 700
+        level = 2
+        break
+      case score >= 50:
+        timeInterval = 800
+        level = 1
+        break
+      default:
+      //
+    }
+
+    this.state.allTimeIntervals.forEach((interval) => clearInterval(interval))
+    this.setState({ timeInterval, allTimeIntervals: [], level })
+    this.startTimer()
   }
 
   removeFullRows = () => {
@@ -121,7 +179,10 @@ class Board extends Component {
     const matchings = allRows.filter((row) => row.length === cols)
 
     //set score
-    if (matchings && matchings.length) this.incrementScore(matchings.length)
+    if (matchings && matchings.length) {
+      this.incrementScore(matchings.length)
+      this.incrementSpeed()
+    }
 
     // delete the rows that are filled
     matchings.forEach((rowToDelete) => {
@@ -154,12 +215,13 @@ class Board extends Component {
 
   startTimer = () => {
     const { timeInterval } = this.state
+
     const gameIsRunning = setInterval(() => {
       if (this.state.paused) {
         clearInterval(gameIsRunning)
       }
       const { board, currentFigure, nextFigure } = { ...this.state }
-      console.log('nexfigure: ', nextFigure[0].figure)
+      // console.log('nexfigure: ', nextFigure[0].figure)
       // If not next figure, take current (for game start)
       const droppedFigure = cloneDeep(currentFigure)
 
@@ -183,6 +245,12 @@ class Board extends Component {
         })
         this.setRandomFigure()
         this.setState({ currentFigure: nextFigure })
+
+        // for increase interval speed we need to remove all intervals
+        let allTimeIntervals = this.state.allTimeIntervals
+        allTimeIntervals.push(gameIsRunning)
+        this.setState({ allTimeIntervals })
+
         return
       }
 
@@ -341,11 +409,13 @@ class Board extends Component {
   }
 
   render() {
-    let { rows, cols, nextFigure } = this.state
+    let { rows, cols, nextFigure, score, level } = this.state
 
     return (
       <React.Fragment>
-        <h1>Score: {this.state.score}</h1>
+        <h1>
+          Score: {score} Level:{level}
+        </h1>
         {nextFigure && nextFigure.length > 0 && (
           <NextFigure nextFigure={nextFigure} />
         )}

@@ -10,17 +10,12 @@ class App extends Component {
 
     this.state = {
       isPaused: true,
-      pauseTime: 0,
     }
   }
 
   handlePaused = (status) => {
     console.log('status: ', status)
     this.setState({ isPaused: status })
-  }
-
-  handleCrono = (seconds) => {
-    console.log(seconds)
   }
 
   render() {
