@@ -1,14 +1,40 @@
+// Animated Background
+@import 'animated_background';
+
+@font-face {
+  font-family: 'tetris';
+  src: url('./fonts/tetris.eot?#iefix') format('embedded-opentype'),
+    url('./fonts/tetris.eot'), url('./fonts/tetris.woff') format('woff'),
+    url('./fonts/tetris.ttf') format('truetype'),
+    url('./fonts/tetris.svg#svgFontName') format('svg');
+}
+$tetris: 'tetris', sans-serif;
+
 $height: 3em;
 $width: $height;
 
-.app {
+#root {
   box-sizing: border-box;
   * {
     box-sizing: border-box;
+    font-family: $tetris;
   }
-  display: block;
+  display: flex;
+  // width: 100%;
+  margin: 1em;
+  padding: 1em;
+  border: 1px solid lightgrey;
+  letter-spacing: 0.2em;
+  text-transform: lowercase;
+  color: white;
+}
+
+.app {
+  display: flex;
   width: fit-content;
   font-size: 10px;
+  margin: 0 auto;
+  border: 1px solid lightgray;
 
   .simpletimer {
     position: absolute;
@@ -64,3 +90,32 @@ $width: $height;
   }
 }
 //
+
+.intro {
+  text-align: center;
+  margin: 1em;
+
+  .intro-input {
+    background: transparent;
+    border: 1px solid red;
+    width: 100%;
+    color: red;
+    padding: 1em;
+    font-size: 2em;
+    text-transform: lowercase;
+    text-align: center;
+  }
+
+  .start-game {
+    font-size: 2em;
+    border: none;
+    background: #ff000033;
+    width: 100%;
+    padding: 1em;
+    color: white;
+    margin: 1em 0;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

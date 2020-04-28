@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Timer from './components/timer'
 import Board from './components/board'
+import Intro from './components/intro'
 import './App.scss'
 
 /* Functional Component */
@@ -10,6 +11,7 @@ class App extends Component {
 
     this.state = {
       isPaused: true,
+      user: null,
     }
   }
 
@@ -21,8 +23,9 @@ class App extends Component {
   render() {
     return (
       <div className='app'>
-        <Timer timerType='crono' isPaused={this.state.isPaused} />
-        <Board gameStatus={this.handlePaused} />
+        <Intro user={this.state.user} />
+        {/* <Timer timerType='crono' isPaused={this.state.isPaused} />
+        <Board gameStatus={this.handlePaused} /> */}
       </div>
     )
   }
