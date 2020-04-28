@@ -29,24 +29,35 @@ class Board extends Component {
         // { x: 4, y: 7, color: 'red' },
         // { x: 5, y: 2, color: 'red' },
         // //
-        // { x: 0, y: 10, color: 'blue' },
-        // { x: 1, y: 10, color: 'blue' },
-        // { x: 2, y: 10, color: 'blue' },
+        // { x: 3, y: 0, color: 'blue' },
+        // { x: 3, y: 1, color: 'blue' },
+        // { x: 3, y: 2, color: 'blue' },
+        // { x: 3, y: 3, color: 'blue' },
+        // { x: 3, y: 4, color: 'blue' },
+        // { x: 3, y: 5, color: 'blue' },
+        // { x: 3, y: 6, color: 'blue' },
+        // { x: 3, y: 7, color: 'blue' },
+        // { x: 3, y: 8, color: 'blue' },
+        // { x: 3, y: 9, color: 'blue' },
         // { x: 3, y: 10, color: 'blue' },
-        // { x: 4, y: 10, color: 'blue' },
-        // { x: 5, y: 10, color: 'blue' },
-        // { x: 7, y: 10, color: 'blue' },
-        // { x: 8, y: 10, color: 'blue' },
-        // { x: 9, y: 10, color: 'blue' },
+        // { x: 3, y: 11, color: 'blue' },
+        // { x: 3, y: 12, color: 'blue' },
+        // { x: 3, y: 13, color: 'blue' },
+        // { x: 3, y: 14, color: 'blue' },
+        // { x: 3, y: 15, color: 'blue' },
+        // { x: 3, y: 16, color: 'blue' },
+        // { x: 3, y: 17, color: 'blue' },
+        // { x: 3, y: 18, color: 'blue' },
+        // { x: 3, y: 19, color: 'blue' },
         // //
-        { x: 0, y: 19, color: 'lightblue' },
-        { x: 1, y: 19, color: 'lightblue' },
-        { x: 2, y: 19, color: 'lightblue' },
-        { x: 3, y: 19, color: 'lightblue' },
-        { x: 4, y: 19, color: 'lightblue' },
-        { x: 5, y: 19, color: 'lightblue' },
-        { x: 6, y: 19, color: 'lightblue' },
-        { x: 7, y: 19, color: 'lightblue' },
+        // { x: 0, y: 19, color: 'lightblue' },
+        // { x: 1, y: 19, color: 'lightblue' },
+        // { x: 2, y: 19, color: 'lightblue' },
+        // { x: 3, y: 19, color: 'lightblue' },
+        // { x: 4, y: 19, color: 'lightblue' },
+        // { x: 5, y: 19, color: 'lightblue' },
+        // { x: 6, y: 19, color: 'lightblue' },
+        // { x: 7, y: 19, color: 'lightblue' },
         // { x: 8, y: 19, color: 'lightblue' },
         // { x: 9, y: 19, color: 'lightblue' },
       ],
@@ -239,6 +250,11 @@ class Board extends Component {
       const collision = this.detectCollisions(board, droppedFigure)
 
       if (maxY > this.state.rows - 2 || collision) {
+        if (maxY <= 2) {
+          this.gameOver()
+          return
+        }
+        // console.table([board])
         this.setState({
           board: [...board, ...currentFigure],
           currentFigure: [],
@@ -267,6 +283,18 @@ class Board extends Component {
       currentFigure: getRandomFigure(this.state.cols),
       nextFigure: getRandomFigure(this.state.cols),
     })
+  }
+
+  gameOver = () => {
+    console.log('GAME OVER')
+    // let { board } = { ...this.state }
+    // board.map((item) => board.splice(board.indexOf(item)))
+    new Promise((resolve) => {
+      this.state.allTimeIntervals.forEach((interval) => clearInterval(interval))
+      resolve()
+    }).then(() =>
+      this.setState({ board: [], currentFigure: [], nextFigure: [] })
+    )
   }
 
   fillBg = (x, y) => {
