@@ -5,22 +5,48 @@ class Controls extends Component {
     super(props)
     this.state = {}
   }
+
+  addStyle = (button) => {
+    return button ? { background: '#ff000060', transform: 'scale(1.1)' } : {}
+  }
+
   render() {
+    const { keyPress, pressedButton } = this.props
     return (
       <div className='controls'>
-        <button className='control-left'>
+        <button
+          type='button'
+          className='control-left'
+          style={this.addStyle(pressedButton.left)}
+          onMouseDown={(_e) => keyPress(_e, 'left')}
+        >
           <span className='arrow'> &#8598;</span>
           <p className='text'>left</p>
         </button>
-        <button className='control-down'>
+        <button
+          type='button'
+          className='control-down'
+          style={this.addStyle(pressedButton.down)}
+          onMouseDown={(_e) => keyPress(_e, 'down')}
+        >
           <span className='arrow'> &#8598;</span>
           <p className='text'>down</p>
         </button>
-        <button className='control-right'>
+        <button
+          type='button'
+          className='control-right'
+          style={this.addStyle(pressedButton.right)}
+          onMouseDown={(_e) => keyPress(_e, 'right')}
+        >
           <span className='arrow'> &#8598;</span>
           <p className='text'>right</p>
         </button>
-        <button className='control-twist'>
+        <button
+          type='button'
+          className='control-twist'
+          style={this.addStyle(pressedButton.space)}
+          onMouseDown={(_e) => keyPress(_e, 'rotate')}
+        >
           <span className='arrow'> &#8634;</span>
           <p className='text'>space</p>
         </button>

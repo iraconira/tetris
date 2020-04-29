@@ -37,29 +37,35 @@ $width: $height;
   width: fit-content;
   font-size: 0.5em;
   margin: 0 auto;
-  border: 1px solid lightgray;
 
   .game-wrapper {
-    border: 1px solid red;
     display: flex;
     justify-content: center;
 
     .left-block,
     .right-block {
+      min-width: 10em;
       display: flex;
       flex-flow: column wrap;
-      border: 1px solid yellow;
       flex: 2;
       justify-content: space-between;
     }
 
     .board {
-      border: 1px solid yellow;
       display: block;
-      // margin: 2em;
-      border: 1px solid grey;
+      border: 1px solid #fa020296;
+      outline: none;
       width: fit-content;
       height: auto;
+      animation: changeBorder alternate 2s infinite;
+      @keyframes changeBorder {
+        0% {
+          border: 1px solid #fa020296;
+        }
+        100% {
+          border: 1px solid #fa02023d;
+        }
+      }
 
       .row {
         display: flex;
@@ -71,14 +77,10 @@ $width: $height;
           // border: unset;
         }
         .figure {
-          border: 2px solid black;
+          // border: 1px solid black;
         }
       }
     }
-  }
-
-  .right-block {
-    border: 1px solid yellow;
   }
 
   .simpletimer {
@@ -95,7 +97,7 @@ $width: $height;
 // Next figure component
 .next-figure {
   display: block;
-  margin: 1em;
+  margin: 0 auto !important;
   // border: 1px solid red;
   width: fit-content;
   height: auto;
@@ -110,7 +112,7 @@ $width: $height;
       // border: unset;
     }
     .figure {
-      border: 2px solid black;
+      border: 1px solid black;
     }
   }
 }
@@ -122,17 +124,21 @@ $width: $height;
   flex-flow: row wrap;
   justify-content: center;
   text-align: center;
-  // width: 100%;
-
+  margin: 1em; // width: 100%;
   .control-twist,
   .control-left,
   .control-down,
   .control-right {
+    outline: none;
     position: relative;
-    border: 1px solid white;
+    border: 1px solid #ffffff30;
     background: transparent;
     color: white;
     font-size: 1em;
+
+    &:hover {
+      cursor: pointer;
+    }
     .arrow {
       display: block;
       width: -moz-fit-content;
@@ -179,45 +185,47 @@ $width: $height;
   .intro-input {
     background: transparent;
     border: 1px solid red;
-    width: 100%;
     color: red;
     padding: 1em;
     font-size: 2em;
     text-transform: lowercase;
     text-align: center;
+    outline: none;
   }
 
   .start-game {
+    display: block;
     font-size: 2em;
     border: none;
     background: #ff000033;
-    width: 100%;
     padding: 1em;
     color: white;
-    margin: 1em 0;
+    margin: 1em auto;
+    outline: none;
     &:hover {
       cursor: pointer;
     }
   }
+}
 
-  .triangle-up {
-    width: 2em;
-    height: 2em;
-    border-left: 2em solid transparent;
-    border-right: 2em solid transparent;
-    border-bottom: 2em solid #ff0000a1;
-    transform: scale(30);
-    animation: bounce alternate 0.5s infinite;
-    margin: 0 auto;
+// triangle arrow
+.triangle-up {
+  width: 2em;
+  height: 2em;
+  border-left: 2em solid transparent;
+  border-right: 2em solid transparent;
+  border-bottom: 2em solid #ff0000a1;
+  transform: scale(30);
+  animation: bounce alternate 0.5s infinite;
+  margin: 0 auto;
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(1em);
   }
-
-  @keyframes bounce {
-    from {
-      transform: translateY(1em);
-    }
-    to {
-      transform: translateY(2em);
-    }
+  to {
+    transform: translateY(2em);
   }
 }
 
@@ -230,7 +238,8 @@ $width: $height;
     margin-bottom: 1em;
   }
   .content {
-    box-shadow: 1px 1px 5px 1px;
+    // box-shadow: 1px 1px 5px 1px;
+    border: 1px solid #ffffff30;
     padding: 1em;
     div {
       text-align: center;
@@ -243,10 +252,16 @@ $width: $height;
 }
 
 .start-stop {
-  min-width: 10em;
   min-height: 5em;
   background: transparent;
   color: white;
   line-height: 1.5em;
   padding: 0.5em;
+  border: unset;
+  margin: 0 1em;
+  outline: none;
+  &:hover {
+    cursor: pointer;
+    background: #ff000033;
+  }
 }

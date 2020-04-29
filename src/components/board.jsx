@@ -7,6 +7,7 @@ import Timer from './timer'
 import Greed from './greed'
 import Controls from './controls'
 import Display from './display'
+import StartStopButton from './startStopButton'
 
 class Board extends Component {
   constructor(props) {
@@ -26,6 +27,12 @@ class Board extends Component {
       score: 0,
       currentFigure: [],
       nextFigure: [],
+      pressedButton: {
+        left: false,
+        right: false,
+        space: false,
+        down: false,
+      },
       board: [
         {},
         // { x: 3, y: 6, color: 'red' },
@@ -75,6 +82,8 @@ class Board extends Component {
   startGame = (_e) => {
     let { displayStartButton, paused } = this.state
 
+    console.log('started')
+
     this.setRandomFigure()
     this.boardRef.current.focus()
     this.setState({ displayStartButton: !displayStartButton, paused: !paused })
@@ -87,7 +96,7 @@ class Board extends Component {
   }
 
   stopGame = (_e) => {
-    let { paused, displayStartButton } = this.state
+    let { paused } = this.state
     // this.setState({ displayStartButton: !displayStartButton, paused: !paused })
     this.setState({ paused: !paused })
     this.startTimer()
@@ -324,34 +333,48 @@ class Board extends Component {
     return style
   }
 
-  handleKeyDown = (_e) => {
+  lightedButton = (button) => {
+    this.setState({ pressedButton: { [button]: true } })
+    setTimeout(() => this.setState({ pressedButton: { [button]: false } }), 200)
+  }
+
+  handleKeyDown = (_e, ctrlButton = null) => {
+    console.log('event: ', _e)
     const { paused } = this.state
     if (!paused) {
-      if (_e.keyCode === 32) return this.rotateFigure()
-      return this.moveFigure(_e)
+      if (_e.keyCode === 32 || ctrlButton === 'rotate') {
+        this.lightedButton('space')
+        return this.rotateFigure()
+      }
+
+      return this.moveFigure(_e, ctrlButton)
     }
   }
 
-  moveFigure = (_e) => {
+  moveFigure = (_e, ctrlButton = null) => {
     // R-39, L-37, D-40
     let increment = 0,
       coord = 'x'
 
-    switch (_e.keyCode) {
-      case 39:
-        coord = 'x'
-        increment = 1
-        break
-      case 37:
-        coord = 'x'
-        increment = -1
-        break
-      case 40:
-        coord = 'y'
-        increment = 1
-        break
-      default:
+    if (_e.keyCode === 39 || ctrlButton === 'right') {
+      ctrlButton = 'right'
+      coord = 'x'
+      increment = 1
     }
+
+    if (_e.keyCode === 37 || ctrlButton === 'left') {
+      ctrlButton = 'left'
+      coord = 'x'
+      increment = -1
+    }
+
+    if (_e.keyCode === 40 || ctrlButton === 'down') {
+      ctrlButton = 'down'
+      coord = 'y'
+      increment = 1
+    }
+
+    this.lightedButton(ctrlButton)
 
     const { board, currentFigure } = { ...this.state }
     // const movedFigure = [...this.state.currentFigure] NOT WORKING. We need lodash!
@@ -427,30 +450,27 @@ class Board extends Component {
     )
   }
 
-  injectButton = () => {
-    const { displayStartButton, paused } = this.state
-
-    if (paused && displayStartButton)
-      return (
-        <button className='start-stop' onClick={this.startGame}>
-          start game
-        </button>
-      )
-
-    return (
-      <button className='start-stop' onClick={this.stopGame}>
-        {paused ? 'resume' : 'pause'}
-      </button>
-    )
-  }
-
   render() {
-    let { rows, cols, nextFigure, score, level, paused } = this.state
+    let {
+      rows,
+      cols,
+      nextFigure,
+      score,
+      level,
+      paused,
+      displayStartButton,
+      pressedButton,
+    } = this.state
 
     return (
       <React.Fragment>
         <div className='left-block'>
-          <div>{this.injectButton()}</div>
+          <StartStopButton
+            displayStartButton={displayStartButton}
+            paused={paused}
+            startGame={this.startGame}
+            stopGame={this.stopGame}
+          />
           <div>
             <Display title={'score'} content={score} textAlign={'right'} />
             <br />
@@ -466,7 +486,10 @@ class Board extends Component {
           ref={this.boardRef}
         >
           <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
-          <Controls />
+          <Controls
+            keyPress={this.handleKeyDown}
+            pressedButton={pressedButton}
+          />
         </div>
         <div className='right-block'>
           <div>

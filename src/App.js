@@ -9,7 +9,7 @@ class App extends Component {
     super()
 
     this.state = {
-      user: { name: 'Jon Doe' },
+      user: { name: '' },
     }
   }
 
