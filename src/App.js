@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Timer from './components/timer'
 import Board from './components/board'
 import Intro from './components/intro'
 import './App.scss'
@@ -10,8 +9,7 @@ class App extends Component {
     super()
 
     this.state = {
-      isPaused: true,
-      user: null,
+      user: { name: 'Jon Doe' },
     }
   }
 
@@ -20,12 +18,26 @@ class App extends Component {
     this.setState({ isPaused: status })
   }
 
+  handleStart = (_e, name) => {
+    _e.preventDefault()
+    this.setState({ user: { name } })
+    console.log('name: ', name)
+  }
+
   render() {
+    const { user } = this.state
     return (
       <div className='app'>
-        <Intro user={this.state.user} />
-        {/* <Timer timerType='crono' isPaused={this.state.isPaused} />
-        <Board gameStatus={this.handlePaused} /> */}
+        {user.name === '' && (
+          <Intro user={user} handleSubmit={this.handleStart} />
+        )}
+
+        {user.name !== '' && (
+          <div className='game-wrapper'>
+            {/* <Board gameStatus={this.handlePaused} /> */}
+            <Board />
+          </div>
+        )}
       </div>
     )
   }

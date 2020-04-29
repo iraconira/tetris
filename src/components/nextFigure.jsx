@@ -8,11 +8,46 @@ const NextFigure = ({ nextFigure }) => {
 
     const setFigureStyle = (figure) => {
       if (figure.x === x && figure.y === y) {
+        const position = hardcodePosition(figure.figure)
         style.background = figure.color
         style.border = '1px solid black'
-        style.borderRadius = '.5em'
+        style.borderRadius = '4px'
         style.boxShadow = '2px 2px 2px grey'
+        style.position = 'relative'
+        style.top = position.top
+        style.left = position.left
       }
+    }
+
+    const hardcodePosition = (figure) => {
+      let position = {}
+      switch (figure) {
+        case 'Z':
+        case 'S':
+        case 'T':
+          position.top = '18px'
+          position.left = '10px'
+          break
+        case 'J':
+          position.top = '8px'
+          position.left = '16px'
+          break
+        case 'L':
+          position.top = '8px'
+          position.left = '4px'
+          break
+        case 'I':
+          position.top = '0px'
+          position.left = '10px'
+          break
+        case 'O':
+          position.top = '18px'
+          position.left = '18px'
+          break
+        default:
+        //
+      }
+      return position
     }
 
     let figure = generateFigure(

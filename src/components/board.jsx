@@ -3,7 +3,10 @@ import React, { Component } from 'react'
 import cloneDeep from 'lodash/cloneDeep'
 import { getRandomFigure, twistFigure } from '../utils/figures'
 import NextFigure from './nextFigure'
+import Timer from './timer'
 import Greed from './greed'
+import Controls from './controls'
+import Display from './display'
 
 class Board extends Component {
   constructor(props) {
@@ -18,7 +21,7 @@ class Board extends Component {
       allTimeIntervals: [],
       level: 1,
       time: 0,
-      paused: false,
+      paused: true,
       displayStartButton: true,
       score: 0,
       currentFigure: [],
@@ -70,29 +73,28 @@ class Board extends Component {
   }
 
   startGame = (_e) => {
-    let { displayStartButton } = this.state
+    let { displayStartButton, paused } = this.state
+
     this.setRandomFigure()
     this.boardRef.current.focus()
+    this.setState({ displayStartButton: !displayStartButton, paused: !paused })
     this.startTimer()
     setInterval(() => this.removeFullRows(), 100)
 
-    displayStartButton = !displayStartButton
-    this.setState({ displayStartButton })
     // emit start event
-    this.props.gameStatus(false)
+    // this.props.gameStatus(false)
     this.preventDoubleClick(_e)
   }
 
   stopGame = (_e) => {
     let { paused, displayStartButton } = this.state
-    paused = !paused
-    displayStartButton = !displayStartButton
-    this.setState({ paused, displayStartButton })
+    // this.setState({ displayStartButton: !displayStartButton, paused: !paused })
+    this.setState({ paused: !paused })
     this.startTimer()
     this.boardRef.current.focus()
 
     // emit stop event
-    this.props.gameStatus(paused ? true : false)
+    // this.props.gameStatus(paused ? true : false)
     this.preventDoubleClick(_e)
   }
 
@@ -293,7 +295,12 @@ class Board extends Component {
       this.state.allTimeIntervals.forEach((interval) => clearInterval(interval))
       resolve()
     }).then(() =>
-      this.setState({ board: [], currentFigure: [], nextFigure: [] })
+      this.setState({
+        board: [],
+        currentFigure: [],
+        nextFigure: [],
+        paused: true,
+      })
     )
   }
 
@@ -306,7 +313,7 @@ class Board extends Component {
       if (figure.x === x && figure.y === y) {
         style.background = figure.color
         style.border = '1px solid black'
-        style.borderRadius = '.5em'
+        style.borderRadius = '4px'
         style.boxShadow = '2px 2px 2px grey'
       }
     }
@@ -423,30 +430,35 @@ class Board extends Component {
   injectButton = () => {
     const { displayStartButton, paused } = this.state
 
-    let btn = ''
+    if (paused && displayStartButton)
+      return (
+        <button className='start-stop' onClick={this.startGame}>
+          start game
+        </button>
+      )
 
-    if (!paused && displayStartButton) {
-      btn = <button onClick={this.startGame}>Start Game</button>
-    } else if (paused) {
-      btn = <button onClick={this.stopGame}>Resume</button>
-    } else {
-      btn = <button onClick={this.stopGame}>Pause</button>
-    }
-
-    return btn
+    return (
+      <button className='start-stop' onClick={this.stopGame}>
+        {paused ? 'resume' : 'pause'}
+      </button>
+    )
   }
 
   render() {
-    let { rows, cols, nextFigure, score, level } = this.state
+    let { rows, cols, nextFigure, score, level, paused } = this.state
 
     return (
       <React.Fragment>
-        <h1>
-          Score: {score} Level:{level}
-        </h1>
-        {nextFigure && nextFigure.length > 0 && (
-          <NextFigure nextFigure={nextFigure} />
-        )}
+        <div className='left-block'>
+          <div>{this.injectButton()}</div>
+          <div>
+            <Display title={'score'} content={score} textAlign={'right'} />
+            <br />
+            <br />
+            <Display title={'level'} content={level} textAlign={'right'} />
+          </div>
+        </div>
+
         <div
           className='board'
           onKeyDown={this.handleKeyDown}
@@ -454,8 +466,33 @@ class Board extends Component {
           ref={this.boardRef}
         >
           <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
+          <Controls />
         </div>
-        {this.injectButton()}
+        <div className='right-block'>
+          <div>
+            <Display
+              title={'time'}
+              content={<Timer timerType='crono' isPaused={paused} />}
+              textAlign={'left'}
+            />
+            <br />
+            <br />
+            {nextFigure && nextFigure.length > 0 && (
+              <Display
+                title={'next figure'}
+                content={<NextFigure nextFigure={nextFigure} />}
+                textAlign={'left'}
+              />
+            )}
+          </div>
+          <div>
+            <Display
+              title={'best player'}
+              content={['jhon', 1234]}
+              textAlign={'left'}
+            />
+          </div>
+        </div>
       </React.Fragment>
     )
   }

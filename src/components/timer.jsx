@@ -7,6 +7,7 @@ class Timer extends Component {
     this.state = {
       seconds: 0,
       time: new Date().toLocaleTimeString(),
+      paused: true,
     }
   }
 
@@ -40,11 +41,12 @@ class Timer extends Component {
   render() {
     const { timerType } = this.props
     const { time } = this.state
-    return (
-      <div className='simpletimer'>
-        {timerType && timerType === 'crono' ? this.crono() : time}
-      </div>
-    )
+    // return (
+    //   <div className='simpletimer'>
+    //     {timerType && timerType === 'crono' ? this.crono() : time}
+    //   </div>
+    // )
+    return <>{timerType && timerType === 'crono' ? this.crono() : time}</>
   }
 }
 

@@ -18,23 +18,68 @@ $width: $height;
   * {
     box-sizing: border-box;
     font-family: $tetris;
+    letter-spacing: 0.2em;
   }
+  position: fixed;
+  width: 98%;
+  height: 98%;
   display: flex;
-  // width: 100%;
-  margin: 1em;
-  padding: 1em;
-  border: 1px solid lightgrey;
-  letter-spacing: 0.2em;
   text-transform: lowercase;
   color: white;
+  // padding: 1em;
+  /* margin: 1em; */
+  /* border: 1px solid lightgrey; */
 }
 
 .app {
   display: flex;
+  align-items: center;
   width: fit-content;
-  font-size: 10px;
+  font-size: 0.5em;
   margin: 0 auto;
   border: 1px solid lightgray;
+
+  .game-wrapper {
+    border: 1px solid red;
+    display: flex;
+    justify-content: center;
+
+    .left-block,
+    .right-block {
+      display: flex;
+      flex-flow: column wrap;
+      border: 1px solid yellow;
+      flex: 2;
+      justify-content: space-between;
+    }
+
+    .board {
+      border: 1px solid yellow;
+      display: block;
+      // margin: 2em;
+      border: 1px solid grey;
+      width: fit-content;
+      height: auto;
+
+      .row {
+        display: flex;
+        width: $width * 10;
+        height: $height;
+        .hub {
+          width: $width;
+          height: $width;
+          // border: unset;
+        }
+        .figure {
+          border: 2px solid black;
+        }
+      }
+    }
+  }
+
+  .right-block {
+    border: 1px solid yellow;
+  }
 
   .simpletimer {
     position: absolute;
@@ -45,52 +90,88 @@ $width: $height;
     color: grey;
     font-size: 12px;
   }
+}
 
-  .board {
-    display: block;
-    margin: 2em;
-    border: 1px solid grey;
-    width: fit-content;
+// Next figure component
+.next-figure {
+  display: block;
+  margin: 1em;
+  // border: 1px solid red;
+  width: fit-content;
+  height: auto;
+
+  .row {
+    display: flex;
+    width: auto;
     height: auto;
-
-    .row {
-      display: flex;
-      width: $width * 10;
-      height: $height;
-      .hub {
-        width: $width;
-        height: $width;
-        // border: unset;
-      }
-      .figure {
-        border: 2px solid black;
-      }
+    .hub {
+      width: 20px;
+      height: 20px;
+      // border: unset;
     }
-  }
-  .next-figure {
-    display: block;
-    margin: 2em;
-    border: 1px solid red;
-    width: fit-content;
-    height: auto;
-
-    .row {
-      display: flex;
-      width: auto;
-      height: auto;
-      .hub {
-        width: $width/2;
-        height: $width/2;
-        // border: unset;
-      }
-      .figure {
-        border: 2px solid black;
-      }
+    .figure {
+      border: 2px solid black;
     }
   }
 }
-//
 
+// controls
+.controls {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  text-align: center;
+  // width: 100%;
+
+  .control-twist,
+  .control-left,
+  .control-down,
+  .control-right {
+    position: relative;
+    border: 1px solid white;
+    background: transparent;
+    color: white;
+    font-size: 1em;
+    .arrow {
+      display: block;
+      width: -moz-fit-content;
+      width: fit-content;
+      margin: 0 auto;
+      font-size: 2em;
+      position: relative;
+      top: 0.3em;
+    }
+    .text {
+      text-emphasis: center;
+    }
+  }
+
+  .control-twist {
+    flex: 1 100%;
+    flex-flow: wrap;
+  }
+  .control-left {
+    flex: 3;
+    span {
+      transform: rotate(-45deg);
+    }
+  }
+  .control-down {
+    flex: 3;
+    span {
+      transform: rotate(-135deg);
+    }
+  }
+  .control-right {
+    flex: 3;
+    span {
+      transform: rotate(135deg);
+    }
+  }
+}
+
+// intro part
 .intro {
   text-align: center;
   margin: 1em;
@@ -118,4 +199,54 @@ $width: $height;
       cursor: pointer;
     }
   }
+
+  .triangle-up {
+    width: 2em;
+    height: 2em;
+    border-left: 2em solid transparent;
+    border-right: 2em solid transparent;
+    border-bottom: 2em solid #ff0000a1;
+    transform: scale(30);
+    animation: bounce alternate 0.5s infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes bounce {
+    from {
+      transform: translateY(1em);
+    }
+    to {
+      transform: translateY(2em);
+    }
+  }
+}
+
+// DIsplay COmponent
+.display {
+  margin: 1em;
+  min-width: 10em;
+  .title {
+    font-weight: 600;
+    margin-bottom: 1em;
+  }
+  .content {
+    box-shadow: 1px 1px 5px 1px;
+    padding: 1em;
+    div {
+      text-align: center;
+      color: red;
+      font-size: 3em;
+      margin: 0;
+      letter-spacing: unset !important;
+    }
+  }
+}
+
+.start-stop {
+  min-width: 10em;
+  min-height: 5em;
+  background: transparent;
+  color: white;
+  line-height: 1.5em;
+  padding: 0.5em;
 }
