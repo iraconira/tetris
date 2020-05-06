@@ -1,31 +1,31 @@
-import React, { Component } from 'react'
-import Board from './components/board'
-import Intro from './components/intro'
-import './App.scss'
+import React, { Component } from 'react';
+import Board from './components/board';
+import Intro from './components/intro';
+import './App.scss';
 
 /* Functional Component */
 class App extends Component {
   constructor() {
-    super()
+    super();
 
     this.state = {
-      user: { name: '' },
-    }
+      user: { name: '', score: 0 },
+    };
   }
 
   handlePaused = (status) => {
-    console.log('status: ', status)
-    this.setState({ isPaused: status })
-  }
+    console.log('status: ', status);
+    this.setState({ isPaused: status });
+  };
 
   handleStart = (_e, name) => {
-    _e.preventDefault()
-    this.setState({ user: { name } })
-    console.log('name: ', name)
-  }
+    _e.preventDefault();
+    this.setState({ user: { name, score: 0 } });
+    console.log('name: ', name);
+  };
 
   render() {
-    const { user } = this.state
+    const { user } = this.state;
     return (
       <div className='app'>
         {user.name === '' && (
@@ -35,12 +35,12 @@ class App extends Component {
         {user.name !== '' && (
           <div className='game-wrapper'>
             {/* <Board gameStatus={this.handlePaused} /> */}
-            <Board />
+            <Board user={user} />
           </div>
         )}
       </div>
-    )
+    );
   }
 }
 
-export default App
+export default App;

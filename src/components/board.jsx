@@ -1,19 +1,27 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import _ from 'lodash';
 // deep clone for prevent old state overriting the modified state
-import cloneDeep from 'lodash/cloneDeep'
-import { getRandomFigure, twistFigure } from '../utils/figures'
-import NextFigure from './nextFigure'
-import Timer from './timer'
-import Greed from './greed'
-import Controls from './controls'
-import Display from './display'
-import StartStopButton from './startStopButton'
+import cloneDeep from 'lodash/cloneDeep';
+import { getRandomFigure, twistFigure } from '../utils/figures';
+import {
+  incrementScore,
+  incrementSpeed,
+  getFilledRows,
+  removeFilledRows,
+  detectCollisions,
+} from '../utils/helpers';
+import NextFigure from './nextFigure';
+import Timer from './timer';
+import Greed from './greed';
+import Controls from './controls';
+import Display from './display';
+import StartStopButton from './startStopButton';
 
 class Board extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.boardRef = React.createRef()
+    this.boardRef = React.createRef();
 
     this.state = {
       rows: 20,
@@ -33,22 +41,24 @@ class Board extends Component {
         space: false,
         down: false,
       },
+      players: [],
+      bestPlayer: {},
       board: [
         {},
         // { x: 3, y: 6, color: 'red' },
         // { x: 4, y: 7, color: 'red' },
         // { x: 5, y: 2, color: 'red' },
         // //
-        // { x: 3, y: 0, color: 'blue' },
-        // { x: 3, y: 1, color: 'blue' },
-        // { x: 3, y: 2, color: 'blue' },
-        // { x: 3, y: 3, color: 'blue' },
-        // { x: 3, y: 4, color: 'blue' },
-        // { x: 3, y: 5, color: 'blue' },
-        // { x: 3, y: 6, color: 'blue' },
-        // { x: 3, y: 7, color: 'blue' },
-        // { x: 3, y: 8, color: 'blue' },
-        // { x: 3, y: 9, color: 'blue' },
+        { x: 0, y: 4, color: 'blue' },
+        { x: 1, y: 4, color: 'blue' },
+        { x: 2, y: 4, color: 'blue' },
+        { x: 3, y: 4, color: 'blue' },
+        { x: 4, y: 4, color: 'blue' },
+        { x: 5, y: 4, color: 'blue' },
+        { x: 6, y: 4, color: 'blue' },
+        { x: 7, y: 4, color: 'blue' },
+        { x: 8, y: 4, color: 'blue' },
+        // { x: 9, y: 4, color: 'blue' },
         // { x: 3, y: 10, color: 'blue' },
         // { x: 3, y: 11, color: 'blue' },
         // { x: 3, y: 12, color: 'blue' },
@@ -71,384 +81,298 @@ class Board extends Component {
         // { x: 8, y: 19, color: 'lightblue' },
         // { x: 9, y: 19, color: 'lightblue' },
       ],
-    }
+    };
   }
 
   componentDidMount() {
-    // this.removeFullRows()
+    // this.checkIfNeedCleanRows()
     // this.setRandomFigure()
+    this.getBestPlayer();
   }
 
   startGame = (_e) => {
-    let { displayStartButton, paused } = this.state
+    let { displayStartButton, paused } = this.state;
 
-    console.log('started')
+    console.log('started');
 
-    this.setRandomFigure()
-    this.boardRef.current.focus()
-    this.setState({ displayStartButton: !displayStartButton, paused: !paused })
-    this.startTimer()
-    setInterval(() => this.removeFullRows(), 100)
+    this.setRandomFigure();
+    this.boardRef.current.focus();
+    this.setState({ displayStartButton: !displayStartButton, paused: !paused });
+    this.startTimer();
+    setInterval(() => this.checkIfNeedCleanRows(), 100);
 
     // emit start event
     // this.props.gameStatus(false)
-    this.preventDoubleClick(_e)
-  }
+    this.preventDoubleClick(_e);
+  };
 
   stopGame = (_e) => {
-    let { paused } = this.state
+    let { paused } = this.state;
     // this.setState({ displayStartButton: !displayStartButton, paused: !paused })
-    this.setState({ paused: !paused })
-    this.startTimer()
-    this.boardRef.current.focus()
+    this.setState({ paused: !paused });
+    this.startTimer();
+    this.boardRef.current.focus();
 
     // emit stop event
     // this.props.gameStatus(paused ? true : false)
-    this.preventDoubleClick(_e)
-  }
+    this.preventDoubleClick(_e);
+  };
+
+  getBestPlayer = () => {
+    const players = [this.props.user];
+    const savedPlayers = localStorage.getItem('players');
+    if (savedPlayers && savedPlayers.length)
+      players.push(JSON.parse(savedPlayers));
+
+    console.table(players);
+    const bestPlayer = _.maxBy(players, (item) => item.score);
+    this.setState({ players, bestPlayer });
+  };
 
   preventDoubleClick = (_e) => {
-    let btn = _e.target
-    _e.stopPropagation()
-    btn.setAttribute('disabled', '')
-    setTimeout(() => btn.removeAttribute('disabled'), 1000)
-  }
+    let btn = _e.target;
+    _e.stopPropagation();
+    btn.setAttribute('disabled', '');
+    setTimeout(() => btn.removeAttribute('disabled'), 1000);
+  };
 
-  incrementScore = (rows) => {
-    let score = 10
-    switch (rows) {
-      case 1:
-        break
-      case 2:
-        score *= 2
-        break
-      case 3:
-        score *= 4
-        break
-      case 4:
-        score *= 10
-        break
-      default:
-      //
-    }
+  checkScoreIntervalIncrement = (fullRows) => {
+    const { score } = this.state;
 
-    this.setState((prevState) => ({ score: prevState.score + score }))
-  }
+    const newScore = incrementScore(fullRows.length) + score;
+    const intLevel = incrementSpeed(newScore);
 
-  incrementSpeed = () => {
-    const { score } = this.state
+    // console.table({newLevel:intLevel.interval, score:intLevel.level});
+    this.state.allTimeIntervals.forEach((interval) => clearInterval(interval));
 
-    let timeInterval = 1000,
-      level = 1
-    switch (true) {
-      case score >= 500:
-        timeInterval = 100
-        level = 8
-        break
-      case score >= 450:
-        timeInterval = 200
-        level = 7
-        break
-      case score >= 400:
-        timeInterval = 300
-        level = 6
-        break
-      case score >= 350:
-        timeInterval = 400
-        level = 5
-        break
-      case score >= 200:
-        timeInterval = 500
-        level = 4
-        break
-      case score >= 150:
-        timeInterval = 600
-        level = 3
-        break
-      case score >= 100:
-        timeInterval = 700
-        level = 2
-        break
-      case score >= 50:
-        timeInterval = 800
-        level = 1
-        break
-      default:
-      //
-    }
+    this.setState({
+      score: newScore,
+      timeInterval: intLevel.interval,
+      allTimeIntervals: [],
+      level: intLevel.level,
+    });
 
-    this.state.allTimeIntervals.forEach((interval) => clearInterval(interval))
-    this.setState({ timeInterval, allTimeIntervals: [], level })
-    this.startTimer()
-  }
+    this.startTimer();
+  };
 
-  removeFullRows = () => {
-    const { rows, cols, board } = { ...this.state }
-
-    let emptyArray = Array.from(Array(rows).keys())
-    let allRows = emptyArray.map((row) => [])
-
-    // generate all rows
-    board.forEach((hub) => {
-      allRows.forEach((row, index) => {
-        if (index === hub.y) {
-          allRows[index].push([hub.x, hub.y])
-        }
-      })
-    })
-
-    // get the row where all cols are filled
-    const matchings = allRows.filter((row) => row.length === cols)
-
-    //set score
-    if (matchings && matchings.length) {
-      this.incrementScore(matchings.length)
-      this.incrementSpeed()
-    }
-
+  checkIfNeedCleanRows = () => {
+    const { rows, cols, board } = { ...this.state };
+    // // get the row where all cols are filled
+    const rowsToRemove = getFilledRows(board, rows, cols);
+    // incremt score and speed
+    if (rowsToRemove && rowsToRemove.length)
+      this.checkScoreIntervalIncrement(rowsToRemove);
     // delete the rows that are filled
-    matchings.forEach((rowToDelete) => {
-      if (rowToDelete && rowToDelete.length === cols) {
-        rowToDelete.forEach((match) => {
-          // console.log('match: ', match)
-          board.forEach((item) => {
-            if (item.x === match[0] && item.y === match[1]) {
-              // console.log('deleted item: ', item)
-              board.splice(board.indexOf(item), 1)
-            }
-          })
-        })
-      }
-      // console.log('board > ', board)
-      // console.log('rowToDeleteYcoor: ', rowToDelete[0][1])
-      board.forEach((item) => {
-        if (item.y < rowToDelete[0][1]) {
-          item.y++
-        }
-      })
-
-      // drop all rows that were over the ful line
-    })
-
-    // setTimeout(() => {
-    this.setState({ board })
-    // }, 2000)
-  }
+    this.setState({ board: removeFilledRows(board, cols, rowsToRemove) });
+  };
 
   startTimer = () => {
-    const { timeInterval } = this.state
+    const { timeInterval } = this.state;
 
     const gameIsRunning = setInterval(() => {
       if (this.state.paused) {
-        clearInterval(gameIsRunning)
+        clearInterval(gameIsRunning);
       }
-      const { board, currentFigure, nextFigure } = { ...this.state }
-      // console.log('nexfigure: ', nextFigure[0].figure)
+      const { board, cols, rows, currentFigure, nextFigure } = {
+        ...this.state,
+      };
       // If not next figure, take current (for game start)
-      const droppedFigure = cloneDeep(currentFigure)
+      const droppedFigure = cloneDeep(currentFigure);
 
       if (!this.state.paused) {
         droppedFigure.forEach((figUnit) => {
-          figUnit.y++
-        })
+          figUnit.y++;
+        });
       }
 
       const maxY = Math.max.apply(
         Math,
         currentFigure.map((figUnit) => figUnit.y)
-      )
+      );
 
-      const collision = this.detectCollisions(board, droppedFigure)
+      const collision = detectCollisions(board, cols, rows, droppedFigure);
 
-      if (maxY > this.state.rows - 2 || collision) {
-        if (maxY <= 2) {
-          this.gameOver()
-          return
-        }
-        // console.table([board])
+      if (collision) {
+        // console.table({
+        //   maxY: maxY,
+        //   rows: this.state.rows,
+        //   'maxY >= rows': maxY >= this.state.rows,
+        // });
+
         this.setState({
           board: [...board, ...currentFigure],
           currentFigure: [],
-        })
-        this.setRandomFigure()
-        this.setState({ currentFigure: nextFigure })
+        });
+        this.setRandomFigure();
+        this.setState({ currentFigure: nextFigure });
+
+        if (maxY < 2) {
+          this.gameOver();
+          return;
+        }
 
         // for increase interval speed we need to remove all intervals
-        let allTimeIntervals = this.state.allTimeIntervals
-        allTimeIntervals.push(gameIsRunning)
-        this.setState({ allTimeIntervals })
+        let allTimeIntervals = this.state.allTimeIntervals;
+        allTimeIntervals.push(gameIsRunning);
+        this.setState({ allTimeIntervals });
 
-        return
+        return;
       }
 
       return this.updateFigureStateAfterMoving(
         currentFigure,
         droppedFigure,
         collision
-      )
-    }, timeInterval)
-  }
+      );
+    }, timeInterval);
+  };
 
   setRandomFigure = () => {
     this.setState({
       currentFigure: getRandomFigure(this.state.cols),
       nextFigure: getRandomFigure(this.state.cols),
-    })
-  }
+    });
+  };
 
   gameOver = () => {
-    console.log('GAME OVER')
-    // let { board } = { ...this.state }
-    // board.map((item) => board.splice(board.indexOf(item)))
+    const { board } = { ...this.state };
+    board.map((item) => (item.color = '#fffefe1f'));
+
     new Promise((resolve) => {
-      this.state.allTimeIntervals.forEach((interval) => clearInterval(interval))
-      resolve()
+      this.state.allTimeIntervals.forEach((interval) =>
+        clearInterval(interval)
+      );
+      resolve();
     }).then(() =>
       this.setState({
-        board: [],
+        board,
         currentFigure: [],
         nextFigure: [],
         paused: true,
+        displayStartButton: true,
       })
-    )
-  }
+    );
+  };
 
   fillBg = (x, y) => {
     // set filled default items
-    const { board, currentFigure } = this.state
-    let style = {}
+    const { board, currentFigure } = this.state;
+    let style = {};
 
     const setFigureStyle = (figure) => {
       if (figure.x === x && figure.y === y) {
-        style.background = figure.color
-        style.border = '1px solid black'
-        style.borderRadius = '4px'
-        style.boxShadow = '2px 2px 2px grey'
+        style.background = figure.color;
+        style.border = '1px solid black';
+        style.borderRadius = '4px';
+        style.boxShadow = '2px 2px 2px grey';
       }
-    }
+    };
 
-    board.forEach((figure) => setFigureStyle(figure))
-    currentFigure.forEach((figure) => setFigureStyle(figure))
+    board.forEach((figure) => setFigureStyle(figure));
+    currentFigure.forEach((figure) => setFigureStyle(figure));
 
-    return style
-  }
+    return style;
+  };
 
   lightedButton = (button) => {
-    this.setState({ pressedButton: { [button]: true } })
-    setTimeout(() => this.setState({ pressedButton: { [button]: false } }), 200)
-  }
+    this.setState({ pressedButton: { [button]: true } });
+    setTimeout(
+      () => this.setState({ pressedButton: { [button]: false } }),
+      200
+    );
+  };
 
   handleKeyDown = (_e, ctrlButton = null) => {
-    console.log('event: ', _e)
-    const { paused } = this.state
+    // console.log('event: ', _e);
+    const { paused } = this.state;
     if (!paused) {
       if (_e.keyCode === 32 || ctrlButton === 'rotate') {
-        this.lightedButton('space')
-        return this.rotateFigure()
+        this.lightedButton('space');
+        return this.rotateFigure();
       }
 
-      return this.moveFigure(_e, ctrlButton)
+      return this.moveFigure(_e, ctrlButton);
     }
-  }
+  };
 
   moveFigure = (_e, ctrlButton = null) => {
     // R-39, L-37, D-40
     let increment = 0,
-      coord = 'x'
+      coord = 'x';
 
     if (_e.keyCode === 39 || ctrlButton === 'right') {
-      ctrlButton = 'right'
-      coord = 'x'
-      increment = 1
+      ctrlButton = 'right';
+      coord = 'x';
+      increment = 1;
     }
 
     if (_e.keyCode === 37 || ctrlButton === 'left') {
-      ctrlButton = 'left'
-      coord = 'x'
-      increment = -1
+      ctrlButton = 'left';
+      coord = 'x';
+      increment = -1;
     }
 
     if (_e.keyCode === 40 || ctrlButton === 'down') {
-      ctrlButton = 'down'
-      coord = 'y'
-      increment = 1
+      ctrlButton = 'down';
+      coord = 'y';
+      increment = 1;
     }
 
-    this.lightedButton(ctrlButton)
+    this.lightedButton(ctrlButton);
 
-    const { board, currentFigure } = { ...this.state }
+    const { board, cols, rows, currentFigure } = { ...this.state };
     // const movedFigure = [...this.state.currentFigure] NOT WORKING. We need lodash!
-    const movedFigure = cloneDeep(currentFigure)
+    const movedFigure = cloneDeep(currentFigure);
 
-    movedFigure.forEach((fig) => (fig[coord] += increment))
+    movedFigure.forEach((fig) => (fig[coord] += increment));
 
-    const collision = this.detectCollisions(board, movedFigure)
+    const collision = detectCollisions(board, cols, rows, movedFigure);
     return this.updateFigureStateAfterMoving(
       currentFigure,
       movedFigure,
       collision
-    )
-  }
-
-  detectCollisions = (board, movedFigure) => {
-    let collision = false
-
-    board.forEach((boardUnit) => {
-      movedFigure.forEach((figUnit) => {
-        if (
-          (boardUnit.x === figUnit.x && boardUnit.y === figUnit.y) ||
-          figUnit.x < 0 ||
-          figUnit.x > this.state.cols - 1 ||
-          figUnit.y > this.state.rows - 1
-        ) {
-          // console.log('collision!! ', [figUnit.x, figUnit.y])
-          collision = true
-        }
-      })
-    })
-
-    return collision
-  }
+    );
+  };
 
   updateFigureStateAfterMoving = (currentFigure, movedFigure, collision) => {
     if (!collision) {
-      this.setState({ currentFigure: movedFigure })
-      collision = false
+      this.setState({ currentFigure: movedFigure });
+      collision = false;
     } else {
-      this.setState({ currentFigure })
+      this.setState({ currentFigure });
     }
-  }
+  };
 
   rotateFigure = () => {
-    const { board, currentFigure, cols } = this.state
-    let twistedFigure = twistFigure(currentFigure)
+    const { board, cols, rows, currentFigure } = this.state;
+    let twistedFigure = twistFigure(currentFigure);
 
-    let collision = this.detectCollisions(board, twistedFigure)
+    let collision = detectCollisions(board, cols, rows, twistedFigure);
 
-    const LRCollision = twistedFigure[0].x > cols / 2 ? 'R' : 'L'
+    const LRCollision = twistedFigure[0].x > cols / 2 ? 'R' : 'L';
 
     // avoid infinite recursion when can't spin
-    let collisionTimes = 0
+    let collisionTimes = 0;
     const reCheckCollision = (board, twistedFigure) => {
       if (collision && collisionTimes <= 3) {
         twistedFigure.forEach((figUnit, index) => {
           LRCollision === 'L'
             ? twistedFigure[index].x++
-            : twistedFigure[index].x--
-        })
-        collision = this.detectCollisions(board, twistedFigure)
-        collisionTimes++
-        return reCheckCollision(board, twistedFigure)
+            : twistedFigure[index].x--;
+        });
+        collision = detectCollisions(board, cols, rows, twistedFigure);
+        collisionTimes++;
+        return reCheckCollision(board, twistedFigure);
       }
-    }
-    reCheckCollision(board, twistedFigure)
+    };
+    reCheckCollision(board, twistedFigure);
 
     return this.updateFigureStateAfterMoving(
       currentFigure,
       twistedFigure,
       collision
-    )
-  }
+    );
+  };
 
   render() {
     let {
@@ -460,7 +384,8 @@ class Board extends Component {
       paused,
       displayStartButton,
       pressedButton,
-    } = this.state
+      bestPlayer,
+    } = this.state;
 
     return (
       <React.Fragment>
@@ -511,14 +436,19 @@ class Board extends Component {
           <div>
             <Display
               title={'best player'}
-              content={['jhon', 1234]}
+              content={[
+                String(bestPlayer.name),
+                bestPlayer.score === 0
+                  ? '---'
+                  : String(parseInt(bestPlayer.score)),
+              ]}
               textAlign={'left'}
             />
           </div>
         </div>
       </React.Fragment>
-    )
+    );
   }
 }
 
-export default Board
+export default Board;

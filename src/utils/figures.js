@@ -188,29 +188,29 @@ const figures = {
       [1, 1],
     ],
   },
-}
+};
 
 function getFigure(figure, position = null) {
-  return figures[figure][position ? position : 'up']
+  return figures[figure][position ? position : 'up'];
 }
 
 function getRandomFigure(cols) {
   // create array from figures
-  let figuresArray = []
+  let figuresArray = [];
   for (const item in figures) {
-    figuresArray.push([item, figures[item].color])
+    figuresArray.push([item, figures[item].color]);
   }
 
   const randomFigure =
-    figuresArray[Math.floor(Math.random() * figuresArray.length)]
+    figuresArray[Math.floor(Math.random() * figuresArray.length)];
   const randomPosition = ['up', 'right', 'down', 'left'][
     Math.floor(Math.random() * ['up', 'right', 'down', 'left'].length)
-  ]
+  ];
 
-  randomFigure.push(randomPosition)
+  randomFigure.push(randomPosition);
 
-  let items = []
-  const figure = getFigure(randomFigure[0])
+  let items = [];
+  const figure = getFigure(randomFigure[0]);
 
   figure.forEach((coord) => {
     items.push({
@@ -220,14 +220,14 @@ function getRandomFigure(cols) {
       figure: randomFigure[0],
       color: randomFigure[1],
       position: 'up',
-    })
-  })
-  return items
+    });
+  });
+  return items;
 }
 
 const generateFigure = (figure, color, position) => {
-  let items = []
-  const shape = getFigure(figure, position)
+  let items = [];
+  const shape = getFigure(figure, position);
   // debugger
   shape.map((coord) => {
     return items.push({
@@ -236,38 +236,38 @@ const generateFigure = (figure, color, position) => {
       color,
       figure,
       position,
-    })
-  })
-  return items
-}
+    });
+  });
+  return items;
+};
 
 function twistFigure(currentFigure) {
-  const figUnit = currentFigure[0]
-  const shapeUnit = figures[figUnit.figure][figUnit.position][0]
+  const figUnit = currentFigure[0];
+  const shapeUnit = figures[figUnit.figure][figUnit.position][0];
 
   // console.log('TWIST: currentFigure > ', currentFigure)
 
-  let rotate = 'up'
+  let rotate = 'up';
   switch (figUnit.position) {
     case 'up':
-      rotate = 'right'
-      break
+      rotate = 'right';
+      break;
     case 'right':
-      rotate = 'down'
-      break
+      rotate = 'down';
+      break;
     case 'down':
-      rotate = 'left'
-      break
+      rotate = 'left';
+      break;
     case 'left':
-      rotate = 'up'
-      break
+      rotate = 'up';
+      break;
     default:
     //
   }
 
-  const twistedFigure = getFigure(figUnit.figure, rotate)
+  const twistedFigure = getFigure(figUnit.figure, rotate);
 
-  const finalFigure = []
+  const finalFigure = [];
   // debugger
   twistedFigure.forEach((coords) => {
     let piece = {
@@ -276,11 +276,11 @@ function twistFigure(currentFigure) {
       color: figUnit.color,
       figure: figUnit.figure,
       position: rotate,
-    }
-    finalFigure.push(piece)
-  })
+    };
+    finalFigure.push(piece);
+  });
   // console.log('TWIST: twistedFigure > ', finalFigure)
-  return finalFigure
+  return finalFigure;
 }
 
-export { figures, getFigure, getRandomFigure, generateFigure, twistFigure }
+export { figures, getFigure, getRandomFigure, generateFigure, twistFigure };
