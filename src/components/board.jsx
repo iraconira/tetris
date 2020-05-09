@@ -35,6 +35,7 @@ class Board extends Component {
       score: 0,
       currentFigure: [],
       nextFigure: [],
+      holdedFigure: [],
       pressedButton: {
         left: false,
         right: false,
@@ -49,15 +50,15 @@ class Board extends Component {
         // { x: 4, y: 7, color: 'red' },
         // { x: 5, y: 2, color: 'red' },
         // //
-        { x: 0, y: 4, color: 'blue' },
-        { x: 1, y: 4, color: 'blue' },
-        { x: 2, y: 4, color: 'blue' },
-        { x: 3, y: 4, color: 'blue' },
-        { x: 4, y: 4, color: 'blue' },
-        { x: 5, y: 4, color: 'blue' },
-        { x: 6, y: 4, color: 'blue' },
-        { x: 7, y: 4, color: 'blue' },
-        { x: 8, y: 4, color: 'blue' },
+        // { x: 0, y: 4, color: 'blue' },
+        // { x: 1, y: 4, color: 'blue' },
+        // { x: 2, y: 4, color: 'blue' },
+        // { x: 3, y: 4, color: 'blue' },
+        // { x: 4, y: 4, color: 'blue' },
+        // { x: 5, y: 4, color: 'blue' },
+        // { x: 6, y: 4, color: 'blue' },
+        // { x: 7, y: 4, color: 'blue' },
+        // { x: 8, y: 4, color: 'blue' },
         // { x: 9, y: 4, color: 'blue' },
         // { x: 3, y: 10, color: 'blue' },
         // { x: 3, y: 11, color: 'blue' },
@@ -93,8 +94,6 @@ class Board extends Component {
   startGame = (_e) => {
     let { displayStartButton, paused } = this.state;
 
-    console.log('started');
-
     this.setRandomFigure();
     this.boardRef.current.focus();
     this.setState({ displayStartButton: !displayStartButton, paused: !paused });
@@ -109,7 +108,7 @@ class Board extends Component {
   stopGame = (_e) => {
     let { paused } = this.state;
     // this.setState({ displayStartButton: !displayStartButton, paused: !paused })
-    this.setState({ paused: !paused });
+    this.setState({ paused: paused === false });
     this.startTimer();
     this.boardRef.current.focus();
 
@@ -118,13 +117,39 @@ class Board extends Component {
     this.preventDoubleClick(_e);
   };
 
+  holdFigure = () => {
+    const { holdedFigure, paused } = this.state;
+    console.table({ holdedFigureLength: holdedFigure.length, paused: paused });
+
+    if (holdedFigure.length === 0 && paused === false) {
+      this.setState((prevState) => ({
+        currentFigure: prevState.nextFigure,
+        holdedFigure: prevState.currentFigure,
+        nextFigure: getRandomFigure(this.state.cols),
+      }));
+    }
+  };
+
+  useHoldedFigure = () => {
+    const { holdedFigure, paused } = this.state;
+    console.table({ holdedFigureLength: holdedFigure.length, paused: paused });
+
+    if (holdedFigure.length !== 0 && paused === false) {
+      this.setState((prevState) => ({
+        currentFigure: prevState.holdedFigure,
+        holdedFigure: [],
+        nextFigure: getRandomFigure(this.state.cols),
+      }));
+    }
+  };
+
   getBestPlayer = () => {
     const players = [this.props.user];
     const savedPlayers = localStorage.getItem('players');
     if (savedPlayers && savedPlayers.length)
       players.push(JSON.parse(savedPlayers));
 
-    console.table(players);
+    // console.table(players);
     const bestPlayer = _.maxBy(players, (item) => item.score);
     this.setState({ players, bestPlayer });
   };
@@ -378,6 +403,7 @@ class Board extends Component {
       rows,
       cols,
       nextFigure,
+      holdedFigure,
       score,
       level,
       paused,
@@ -395,6 +421,12 @@ class Board extends Component {
             startGame={this.startGame}
             stopGame={this.stopGame}
           />
+          <br />
+          <br />
+          <div>
+            <button onClick={this.holdFigure}>hold</button>
+            <button onClick={this.useHoldedFigure}>user</button>
+          </div>
           <div>
             <Display title={'score'} content={score} textAlign={'right'} />
             <br />
@@ -428,6 +460,13 @@ class Board extends Component {
               <Display
                 title={'next figure'}
                 content={<NextFigure nextFigure={nextFigure} />}
+                textAlign={'left'}
+              />
+            )}
+            {holdedFigure && holdedFigure.length > 0 && (
+              <Display
+                title={'holded'}
+                content={<NextFigure nextFigure={holdedFigure} />}
                 textAlign={'left'}
               />
             )}
