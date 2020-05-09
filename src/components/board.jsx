@@ -262,7 +262,7 @@ class Board extends Component {
     const setFigureStyle = (figure) => {
       if (figure.x === x && figure.y === y) {
         style.background = figure.color;
-        style.border = '0.05rem solid #00000070';
+        style.border = '0.05rem solid #ffffff80';
         style.borderRadius = '0.1rem';
       }
     };
