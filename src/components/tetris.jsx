@@ -15,9 +15,9 @@ import Timer from './timer';
 import Greed from './greed';
 import Controls from './controls';
 import Display from './display';
-import StartStopButton from './startStopButton';
+// import StartStopButton from './startStopButton';
 
-class Board extends Component {
+class Tetris extends Component {
   constructor(props) {
     super(props);
 
@@ -119,7 +119,6 @@ class Board extends Component {
 
   holdFigure = () => {
     const { holdedFigure, paused } = this.state;
-    console.table({ holdedFigureLength: holdedFigure.length, paused: paused });
 
     if (holdedFigure.length === 0 && paused === false) {
       this.setState((prevState) => ({
@@ -132,7 +131,6 @@ class Board extends Component {
 
   useHoldedFigure = () => {
     const { holdedFigure, paused } = this.state;
-    console.table({ holdedFigureLength: holdedFigure.length, paused: paused });
 
     if (holdedFigure.length !== 0 && paused === false) {
       this.setState((prevState) => ({
@@ -287,8 +285,6 @@ class Board extends Component {
     const setFigureStyle = (figure) => {
       if (figure.x === x && figure.y === y) {
         style.background = figure.color;
-        style.border = '0.05rem solid #ffffff80';
-        style.borderRadius = '0.1rem';
       }
     };
 
@@ -413,49 +409,65 @@ class Board extends Component {
     } = this.state;
 
     return (
-      <React.Fragment>
-        <div className='left-block'>
+      <div className='tetris' ref={this.boardRef}>
+        {/* <div className='left-block'>
           <StartStopButton
             displayStartButton={displayStartButton}
             paused={paused}
             startGame={this.startGame}
             stopGame={this.stopGame}
           />
-          <br />
-          <br />
           <div>
             <button onClick={this.holdFigure}>hold</button>
             <button onClick={this.useHoldedFigure}>user</button>
           </div>
           <div>
             <Display title={'score'} content={score} textAlign={'right'} />
-            <br />
-            <br />
             <Display title={'level'} content={level} textAlign={'right'} />
           </div>
+        </div> */}
+        <div className='widgets'>
+          {holdedFigure && holdedFigure.length > 0 && (
+            <Display
+              title={'holded'}
+              content={<NextFigure nextFigure={holdedFigure} />}
+              textAlign={'center'}
+            />
+          )}
+          <Display
+            title={'time'}
+            content={<Timer timerType='crono' isPaused={paused} />}
+            textAlign={'center'}
+          />
+          <Display title={'score'} content={score} textAlign={'center'} />
+          <Display title={'level'} content={level} textAlign={'center'} />
+          {nextFigure && nextFigure.length > 0 && (
+            <Display
+              title={'next'}
+              content={<NextFigure nextFigure={nextFigure} />}
+              textAlign={'center'}
+            />
+          )}
         </div>
 
-        <div
-          className='board'
-          onKeyDown={this.handleKeyDown}
-          tabIndex='0'
-          ref={this.boardRef}
-        >
+        <div className='board' onKeyDown={this.handleKeyDown} tabIndex='0'>
           <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
-          <Controls
-            keyPress={this.handleKeyDown}
-            pressedButton={pressedButton}
-          />
         </div>
-        <div className='right-block'>
+        <Controls
+          keyPress={this.handleKeyDown}
+          pressedButton={pressedButton}
+          displayStartButton={displayStartButton}
+          paused={paused}
+          startGame={this.startGame}
+          stopGame={this.stopGame}
+        />
+        {/* <div className='right-block'>
           <div>
             <Display
               title={'time'}
               content={<Timer timerType='crono' isPaused={paused} />}
               textAlign={'left'}
             />
-            <br />
-            <br />
             {nextFigure && nextFigure.length > 0 && (
               <Display
                 title={'next figure'}
@@ -483,10 +495,10 @@ class Board extends Component {
               textAlign={'left'}
             />
           </div>
-        </div>
-      </React.Fragment>
+        </div> */}
+      </div>
     );
   }
 }
 
-export default Board;
+export default Tetris;

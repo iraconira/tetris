@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Board from './components/board';
+import Tetris from './components/tetris';
 import Intro from './components/intro';
 import './App.scss';
 
@@ -9,7 +9,7 @@ class App extends Component {
     super();
 
     this.state = {
-      user: { name: '', score: 0 },
+      user: { name: 'aaa', score: 0 },
     };
   }
 
@@ -28,15 +28,13 @@ class App extends Component {
     const { user } = this.state;
     return (
       <div className='app'>
-        {user.name === '' && (
+        {/* {user.name === '' && (
           <Intro user={user} handleSubmit={this.handleStart} />
-        )}
+        )} */}
 
         {user.name !== '' && (
-          <div className='game-wrapper'>
-            {/* <Board gameStatus={this.handlePaused} /> */}
-            <Board user={user} />
-          </div>
+          /* <Tetris gameStatus={this.handlePaused} /> */
+          <Tetris user={user} />
         )}
       </div>
     );

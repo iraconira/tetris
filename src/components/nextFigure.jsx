@@ -10,8 +10,6 @@ const NextFigure = ({ nextFigure }) => {
       if (figure.x === x && figure.y === y) {
         const position = hardcodePosition(figure.figure);
         style.background = figure.color;
-        style.border = '0.05rem solid #00000070';
-        style.borderRadius = '0.1rem';
         style.position = 'relative';
         style.top = position.top;
         style.left = position.left;

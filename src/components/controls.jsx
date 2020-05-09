@@ -1,19 +1,26 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import StartStopButton from './startStopButton';
 
 class Controls extends Component {
   constructor(props) {
-    super(props)
-    this.state = {}
+    super(props);
+    this.state = {};
   }
 
   addStyle = (button) => {
-    return button ? { background: '#ff000060', transform: 'scale(1.1)' } : {}
-  }
+    return button ? { background: '#ff000060', transform: 'scale(1.1)' } : {};
+  };
 
   render() {
-    const { keyPress, pressedButton } = this.props
+    const { keyPress, pressedButton } = this.props;
     return (
       <div className='controls'>
+        <StartStopButton
+          displayStartButton={this.props.displayStartButton}
+          paused={this.props.paused}
+          startGame={this.props.startGame}
+          stopGame={this.props.stopGame}
+        />
         <button
           type='button'
           className='control-left'
@@ -51,8 +58,8 @@ class Controls extends Component {
           <p className='text'>space</p>
         </button>
       </div>
-    )
+    );
   }
 }
 
-export default Controls
+export default Controls;
