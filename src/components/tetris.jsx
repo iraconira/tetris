@@ -15,6 +15,7 @@ import Timer from './timer';
 import Greed from './greed';
 import Controls from './controls';
 import Display from './display';
+import Sounds from './sounds';
 // import StartStopButton from './startStopButton';
 
 class Tetris extends Component {
@@ -40,8 +41,9 @@ class Tetris extends Component {
       pressedButton: {
         left: false,
         right: false,
-        space: false,
+        twist: false,
         down: false,
+        hold: false,
       },
       players: [],
       bestPlayer: {},
@@ -307,11 +309,25 @@ class Tetris extends Component {
 
   handleKeyDown = (_e, ctrlButton = null) => {
     // console.log('event: ', _e);
-    const { paused } = this.state;
+    const { paused, displayHold } = this.state;
     if (!paused) {
+      // space
       if (_e.keyCode === 32 || ctrlButton === 'rotate') {
-        this.lightedButton('space');
+        this.lightedButton('twist');
         return this.rotateFigure();
+      }
+
+      // ctrl
+      if (_e.keyCode === 17 || ctrlButton === 'hold' || ctrlButton === 'use') {
+        console.log('key code: ', _e.keyCode);
+
+        if (displayHold) {
+          this.lightedButton('hold');
+          return this.holdFigure();
+        } else {
+          this.lightedButton('hold');
+          return this.useHoldedFigure();
+        }
       }
 
       return this.moveFigure(_e, ctrlButton);
@@ -456,6 +472,8 @@ class Tetris extends Component {
           holdFigure={this.holdFigure}
           useHoldedFigure={this.useHoldedFigure}
         />
+
+        <Sounds />
       </div>
     );
   }

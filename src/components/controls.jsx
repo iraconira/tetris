@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import StartStopButton from './startStopButton';
-import HoldButton from './holdButton';
+// import HoldButton from './holdButton';
 
 class Controls extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class Controls extends Component {
   };
 
   render() {
-    const { keyPress, pressedButton } = this.props;
+    const { keyPress, pressedButton, displayHold } = this.props;
     return (
       <div className='controls'>
         <div className='left-block'>
@@ -59,17 +59,30 @@ class Controls extends Component {
           <button
             type='button'
             className='control-twist'
-            style={this.addStyle(pressedButton.space)}
+            style={this.addStyle(pressedButton.twist)}
             onMouseDown={(_e) => keyPress(_e, 'rotate')}
           >
             <span className='arrow'> &#8634;</span>
             {/* <p className='text'>space</p> */}
           </button>
-          <HoldButton
-            displayHold={this.props.displayHold}
-            holdFigure={this.props.holdFigure}
-            useHoldedFigure={this.props.useHoldedFigure}
-          ></HoldButton>
+
+          {(displayHold && (
+            <button
+              className='hold'
+              style={this.addStyle(pressedButton.hold)}
+              onMouseDown={(_e) => keyPress(_e, 'hold')}
+            >
+              hold
+            </button>
+          )) || (
+            <button
+              className='hold'
+              style={this.addStyle(pressedButton.hold)}
+              onMouseDown={(_e) => keyPress(_e, 'use')}
+            >
+              use
+            </button>
+          )}
         </div>
       </div>
     );

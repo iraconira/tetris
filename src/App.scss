@@ -90,7 +90,7 @@ html {
           .hub {
             width: $width;
             height: $width;
-            border: 0.1rem dashed #0b0a0a21;
+            border: 0.1rem dashed #ff63470a;
           }
         }
       }
@@ -121,9 +121,6 @@ html {
           .hub {
             width: 0.5rem;
             height: 0.5rem;
-          }
-          .figure {
-            border: 1px solid black;
           }
         }
       }
@@ -217,7 +214,7 @@ html {
     // border: 1px solid red;
     position: absolute;
     top: 0.4rem;
-    left: 0.2rem;
+    left: 0.5rem;
 
     .control-left,
     .control-down,
@@ -300,7 +297,7 @@ html {
     // border: 1px solid red;
     position: absolute;
     top: 0.4rem;
-    right: 0.2rem;
+    right: 0.5rem;
     .control-twist,
     .hold {
       width: 3rem;
