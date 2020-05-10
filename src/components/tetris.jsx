@@ -427,13 +427,6 @@ class Tetris extends Component {
           </div>
         </div> */}
         <div className='widgets'>
-          {holdedFigure && holdedFigure.length > 0 && (
-            <Display
-              title={'holded'}
-              content={<NextFigure nextFigure={holdedFigure} />}
-              textAlign={'center'}
-            />
-          )}
           <Display
             title={'time'}
             content={<Timer timerType='crono' isPaused={paused} />}
@@ -441,18 +434,30 @@ class Tetris extends Component {
           />
           <Display title={'score'} content={score} textAlign={'center'} />
           <Display title={'level'} content={level} textAlign={'center'} />
+        </div>
+        <div className='board-wrapper'>
+          <div className='board' onKeyDown={this.handleKeyDown} tabIndex='0'>
+            <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
+          </div>
           {nextFigure && nextFigure.length > 0 && (
-            <Display
-              title={'next'}
-              content={<NextFigure nextFigure={nextFigure} />}
-              textAlign={'center'}
-            />
+            <div className='preview-figures-wrapper'>
+              <Display
+                title={'next'}
+                content={<NextFigure nextFigure={nextFigure} />}
+                textAlign={'center'}
+              />
+
+              {holdedFigure && holdedFigure.length > 0 && (
+                <Display
+                  title={'holded'}
+                  content={<NextFigure nextFigure={holdedFigure} />}
+                  textAlign={'center'}
+                />
+              )}
+            </div>
           )}
         </div>
 
-        <div className='board' onKeyDown={this.handleKeyDown} tabIndex='0'>
-          <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
-        </div>
         <Controls
           keyPress={this.handleKeyDown}
           pressedButton={pressedButton}

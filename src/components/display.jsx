@@ -22,7 +22,7 @@ const Display = ({ title, content, textAlign }) => {
 Display.propTypes = {
   title: PropTypes.string.isRequired,
   content: PropTypes.any.isRequired,
-  textAlign: PropTypes.oneOf(['left', 'right']).isRequired,
+  textAlign: PropTypes.oneOf(['left', 'right', 'center']).isRequired,
 };
 
 export default Display;
