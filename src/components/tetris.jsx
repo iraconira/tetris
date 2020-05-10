@@ -36,6 +36,7 @@ class Tetris extends Component {
       currentFigure: [],
       nextFigure: [],
       holdedFigure: [],
+      displayHold: true,
       pressedButton: {
         left: false,
         right: false,
@@ -125,6 +126,7 @@ class Tetris extends Component {
         currentFigure: prevState.nextFigure,
         holdedFigure: prevState.currentFigure,
         nextFigure: getRandomFigure(this.state.cols),
+        displayHold: false,
       }));
     }
   };
@@ -137,6 +139,7 @@ class Tetris extends Component {
         currentFigure: prevState.holdedFigure,
         holdedFigure: [],
         nextFigure: getRandomFigure(this.state.cols),
+        displayHold: true,
       }));
     }
   };
@@ -405,27 +408,11 @@ class Tetris extends Component {
       paused,
       displayStartButton,
       pressedButton,
-      bestPlayer,
+      displayHold,
     } = this.state;
 
     return (
       <div className='tetris' ref={this.boardRef}>
-        {/* <div className='left-block'>
-          <StartStopButton
-            displayStartButton={displayStartButton}
-            paused={paused}
-            startGame={this.startGame}
-            stopGame={this.stopGame}
-          />
-          <div>
-            <button onClick={this.holdFigure}>hold</button>
-            <button onClick={this.useHoldedFigure}>user</button>
-          </div>
-          <div>
-            <Display title={'score'} content={score} textAlign={'right'} />
-            <Display title={'level'} content={level} textAlign={'right'} />
-          </div>
-        </div> */}
         <div className='widgets'>
           <Display
             title={'time'}
@@ -465,42 +452,10 @@ class Tetris extends Component {
           paused={paused}
           startGame={this.startGame}
           stopGame={this.stopGame}
+          displayHold={displayHold}
+          holdFigure={this.holdFigure}
+          useHoldedFigure={this.useHoldedFigure}
         />
-        {/* <div className='right-block'>
-          <div>
-            <Display
-              title={'time'}
-              content={<Timer timerType='crono' isPaused={paused} />}
-              textAlign={'left'}
-            />
-            {nextFigure && nextFigure.length > 0 && (
-              <Display
-                title={'next figure'}
-                content={<NextFigure nextFigure={nextFigure} />}
-                textAlign={'left'}
-              />
-            )}
-            {holdedFigure && holdedFigure.length > 0 && (
-              <Display
-                title={'holded'}
-                content={<NextFigure nextFigure={holdedFigure} />}
-                textAlign={'left'}
-              />
-            )}
-          </div>
-          <div>
-            <Display
-              title={'best player'}
-              content={[
-                String(bestPlayer.name),
-                bestPlayer.score === 0
-                  ? '---'
-                  : String(parseInt(bestPlayer.score)),
-              ]}
-              textAlign={'left'}
-            />
-          </div>
-        </div> */}
       </div>
     );
   }
