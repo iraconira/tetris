@@ -15,14 +15,14 @@ import Timer from './timer';
 import Greed from './greed';
 import Controls from './controls';
 import Display from './display';
-import Sounds from './sounds';
+import Music from './music';
 // import StartStopButton from './startStopButton';
 
 class Tetris extends Component {
   constructor(props) {
     super(props);
 
-    this.boardRef = React.createRef();
+    this.controlsRef = React.createRef();
 
     this.state = {
       rows: 20,
@@ -47,6 +47,7 @@ class Tetris extends Component {
       },
       players: [],
       bestPlayer: {},
+      sound: '',
       board: [
         {},
         // { x: 3, y: 6, color: 'red' },
@@ -98,10 +99,10 @@ class Tetris extends Component {
     let { displayStartButton, paused } = this.state;
 
     this.setRandomFigure();
-    this.boardRef.current.focus();
     this.setState({ displayStartButton: !displayStartButton, paused: !paused });
     this.startTimer();
     setInterval(() => this.checkIfNeedCleanRows(), 100);
+    this.controlsRef.current.focus();
 
     // emit start event
     // this.props.gameStatus(false)
@@ -113,7 +114,7 @@ class Tetris extends Component {
     // this.setState({ displayStartButton: !displayStartButton, paused: !paused })
     this.setState({ paused: paused === false });
     this.startTimer();
-    this.boardRef.current.focus();
+    this.controlsRef.current.focus();
 
     // emit stop event
     // this.props.gameStatus(paused ? true : false)
@@ -188,8 +189,11 @@ class Tetris extends Component {
     // // get the row where all cols are filled
     const rowsToRemove = getFilledRows(board, rows, cols);
     // incremt score and speed
-    if (rowsToRemove && rowsToRemove.length)
+    if (rowsToRemove && rowsToRemove.length) {
       this.checkScoreIntervalIncrement(rowsToRemove);
+      // emit sound
+      this.emitSound('line');
+    }
     // delete the rows that are filled
     this.setState({ board: removeFilledRows(board, cols, rowsToRemove) });
   };
@@ -243,6 +247,9 @@ class Tetris extends Component {
         let allTimeIntervals = this.state.allTimeIntervals;
         allTimeIntervals.push(gameIsRunning);
         this.setState({ allTimeIntervals });
+
+        // make sound
+        this.emitSound('fall');
 
         return;
       }
@@ -309,7 +316,12 @@ class Tetris extends Component {
 
   handleKeyDown = (_e, ctrlButton = null) => {
     // console.log('event: ', _e);
+    setTimeout(() => {
+      this.controlsRef.current.focus();
+    }, 1000);
+
     const { paused, displayHold } = this.state;
+
     if (!paused) {
       // space
       if (_e.keyCode === 32 || ctrlButton === 'rotate') {
@@ -319,8 +331,6 @@ class Tetris extends Component {
 
       // ctrl
       if (_e.keyCode === 17 || ctrlButton === 'hold' || ctrlButton === 'use') {
-        console.log('key code: ', _e.keyCode);
-
         if (displayHold) {
           this.lightedButton('hold');
           return this.holdFigure();
@@ -413,6 +423,11 @@ class Tetris extends Component {
     );
   };
 
+  emitSound = (sound) => {
+    this.setState({ sound: sound });
+    setTimeout(() => this.setState({ sound: '' }), 10);
+  };
+
   render() {
     let {
       rows,
@@ -425,10 +440,12 @@ class Tetris extends Component {
       displayStartButton,
       pressedButton,
       displayHold,
+      sound,
     } = this.state;
 
     return (
-      <div className='tetris' ref={this.boardRef}>
+      <div className='tetris'>
+        <Music paused={paused} level={level} sound={sound} />
         <div className='widgets'>
           <Display
             title={'time'}
@@ -439,7 +456,12 @@ class Tetris extends Component {
           <Display title={'level'} content={level} textAlign={'center'} />
         </div>
         <div className='board-wrapper'>
-          <div className='board' onKeyDown={this.handleKeyDown} tabIndex='0'>
+          <div
+            className='board'
+            onKeyDown={this.handleKeyDown}
+            tabIndex='0'
+            ref={this.controlsRef}
+          >
             <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
           </div>
           {nextFigure && nextFigure.length > 0 && (
@@ -472,8 +494,6 @@ class Tetris extends Component {
           holdFigure={this.holdFigure}
           useHoldedFigure={this.useHoldedFigure}
         />
-
-        <Sounds />
       </div>
     );
   }

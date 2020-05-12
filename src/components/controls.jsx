@@ -5,6 +5,7 @@ import StartStopButton from './startStopButton';
 class Controls extends Component {
   constructor(props) {
     super(props);
+
     this.state = {};
   }
 
