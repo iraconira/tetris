@@ -324,8 +324,8 @@ html {
 
   .intro-input {
     background: transparent;
-    border: 1px solid tomato;
-    color: tomato;
+    border: 1px solid red;
+    color: red;
     padding: 1rem;
     margin: 0.5rem auto;
     font-size: 1rem;
@@ -371,5 +371,16 @@ html {
 
   .game-over {
     background: black !important;
+  }
+
+  .instructions {
+    // border: 1px solid yellow;
+    width: 100%;
+    height: 10rem;
+    background-image: url('/instructions.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.6;
+    margin-top: 5rem;
   }
 }

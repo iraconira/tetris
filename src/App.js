@@ -9,7 +9,7 @@ class App extends Component {
     super();
 
     this.state = {
-      user: { name: 'aaa', score: 0 },
+      user: { name: '', score: 0 },
     };
   }
 
@@ -28,14 +28,11 @@ class App extends Component {
     const { user } = this.state;
     return (
       <div className='app'>
-        {/* {user.name === '' && (
+        {user.name === '' && (
           <Intro user={user} handleSubmit={this.handleStart} />
-        )} */}
-
-        {user.name !== '' && (
-          /* <Tetris gameStatus={this.handlePaused} /> */
-          <Tetris user={user} />
         )}
+
+        {user.name !== '' && <Tetris user={user} />}
       </div>
     );
   }

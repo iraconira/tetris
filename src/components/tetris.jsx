@@ -93,6 +93,7 @@ class Tetris extends Component {
     // this.checkIfNeedCleanRows()
     // this.setRandomFigure()
     this.getBestPlayer();
+    this.controlsRef.current.focus();
   }
 
   startGame = (_e) => {
@@ -106,7 +107,7 @@ class Tetris extends Component {
 
     // emit start event
     // this.props.gameStatus(false)
-    this.preventDoubleClick(_e);
+    if (_e) this.preventDoubleClick(_e);
   };
 
   stopGame = (_e) => {
@@ -118,7 +119,7 @@ class Tetris extends Component {
 
     // emit stop event
     // this.props.gameStatus(paused ? true : false)
-    this.preventDoubleClick(_e);
+    if (_e) this.preventDoubleClick(_e);
   };
 
   holdFigure = () => {
@@ -192,7 +193,9 @@ class Tetris extends Component {
     if (rowsToRemove && rowsToRemove.length) {
       this.checkScoreIntervalIncrement(rowsToRemove);
       // emit sound
-      this.emitSound('line');
+      rowsToRemove.length === 4
+        ? this.emitSound('success')
+        : this.emitSound('line');
     }
     // delete the rows that are filled
     this.setState({ board: removeFilledRows(board, cols, rowsToRemove) });
@@ -287,6 +290,7 @@ class Tetris extends Component {
         displayStartButton: true,
       })
     );
+    this.emitSound('gameover');
   };
 
   fillBg = (x, y) => {
@@ -315,12 +319,18 @@ class Tetris extends Component {
   };
 
   handleKeyDown = (_e, ctrlButton = null) => {
-    // console.log('event: ', _e);
+    console.log('event: ', _e.keyCode);
     setTimeout(() => {
       this.controlsRef.current.focus();
     }, 1000);
 
-    const { paused, displayHold } = this.state;
+    const { paused, displayHold, displayStartButton } = this.state;
+
+    // enter
+    if (_e.keyCode === 13 && displayStartButton) return this.startGame();
+
+    // esc
+    if (_e.keyCode === 27 && !displayStartButton) return this.stopGame();
 
     if (!paused) {
       // space
@@ -331,6 +341,7 @@ class Tetris extends Component {
 
       // ctrl
       if (_e.keyCode === 17 || ctrlButton === 'hold' || ctrlButton === 'use') {
+        this.emitSound('selection');
         if (displayHold) {
           this.lightedButton('hold');
           return this.holdFigure();

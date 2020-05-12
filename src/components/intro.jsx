@@ -1,22 +1,22 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 class Intro extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
       user: {},
-    }
+    };
   }
 
   handleKeyPress = (_e) => {
-    const { user } = { ...this.state }
-    const char = _e.target.value
-    user.name = char
-    this.setState({ user })
-  }
+    const { user } = { ...this.state };
+    const char = _e.target.value;
+    user.name = char;
+    this.setState({ user });
+  };
 
   render() {
-    const { name } = this.state.user
+    const { name } = this.state.user;
     return (
       <form
         className='intro'
@@ -39,9 +39,10 @@ class Intro extends Component {
             start game
           </button>
         )) || <div className='triangle-up'></div>}
+        <div className='instructions'></div>
       </form>
-    )
+    );
   }
 }
 
-export default Intro
+export default Intro;
