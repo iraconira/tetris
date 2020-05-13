@@ -106,7 +106,7 @@ class Music extends Component {
     if (!paused) {
       this.playTetrisMusic(true, speed, vol);
     }
-    document.querySelector('.board').focus();
+    setTimeout(() => document.querySelector('.board').focus(), 100);
   };
 
   render() {

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import StartStopButton from './startStopButton';
-// import HoldButton from './holdButton';
 
 class Controls extends Component {
   constructor(props) {
@@ -25,7 +24,6 @@ class Controls extends Component {
             onMouseDown={(_e) => keyPress(_e, 'left')}
           >
             <span className='arrow'> &#8598;</span>
-            {/* <p className='text'>left</p> */}
           </button>
           <button
             type='button'
@@ -34,7 +32,6 @@ class Controls extends Component {
             onMouseDown={(_e) => keyPress(_e, 'down')}
           >
             <span className='arrow'> &#8598;</span>
-            {/* <p className='text'>down</p> */}
           </button>
           <button
             type='button'
@@ -43,7 +40,6 @@ class Controls extends Component {
             onMouseDown={(_e) => keyPress(_e, 'right')}
           >
             <span className='arrow'> &#8598;</span>
-            {/* <p className='text'>right</p> */}
           </button>
         </div>
 
@@ -64,7 +60,6 @@ class Controls extends Component {
             onMouseDown={(_e) => keyPress(_e, 'rotate')}
           >
             <span className='arrow'> &#8634;</span>
-            {/* <p className='text'>space</p> */}
           </button>
 
           {(displayHold && (

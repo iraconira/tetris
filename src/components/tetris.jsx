@@ -16,6 +16,7 @@ import Greed from './greed';
 import Controls from './controls';
 import Display from './display';
 import Music from './music';
+import UsersTable from './usersTable';
 // import StartStopButton from './startStopButton';
 
 class Tetris extends Component {
@@ -33,6 +34,7 @@ class Tetris extends Component {
       time: 0,
       paused: true,
       displayStartButton: true,
+      escBtnDisabled: true,
       score: 0,
       currentFigure: [],
       nextFigure: [],
@@ -92,7 +94,6 @@ class Tetris extends Component {
   componentDidMount() {
     // this.checkIfNeedCleanRows()
     // this.setRandomFigure()
-    this.getBestPlayer();
     this.controlsRef.current.focus();
   }
 
@@ -106,8 +107,7 @@ class Tetris extends Component {
     this.controlsRef.current.focus();
 
     // emit start event
-    // this.props.gameStatus(false)
-    if (_e) this.preventDoubleClick(_e);
+    this.preventDoubleClick(_e);
   };
 
   stopGame = (_e) => {
@@ -118,8 +118,7 @@ class Tetris extends Component {
     this.controlsRef.current.focus();
 
     // emit stop event
-    // this.props.gameStatus(paused ? true : false)
-    if (_e) this.preventDoubleClick(_e);
+    this.preventDoubleClick(_e);
   };
 
   holdFigure = () => {
@@ -149,21 +148,31 @@ class Tetris extends Component {
   };
 
   getBestPlayer = () => {
-    const players = [this.props.user];
+    const { time, level } = this.state;
+    const players = [{ ...this.props.user, level, time }];
     const savedPlayers = localStorage.getItem('players');
+
     if (savedPlayers && savedPlayers.length)
       players.push(JSON.parse(savedPlayers));
 
-    // console.table(players);
     const bestPlayer = _.maxBy(players, (item) => item.score);
+    // save users
+    localStorage.setItem('players', JSON.stringify(players));
     this.setState({ players, bestPlayer });
   };
 
   preventDoubleClick = (_e) => {
-    let btn = _e.target;
-    _e.stopPropagation();
-    btn.setAttribute('disabled', '');
-    setTimeout(() => btn.removeAttribute('disabled'), 1000);
+    if (_e) {
+      // disable start/stop button
+      let btn = _e.target;
+      _e.stopPropagation();
+      btn.setAttribute('disabled', '');
+      setTimeout(() => btn.removeAttribute('disabled'), 1000);
+    }
+
+    // disable esc key duriong 1 sec
+    this.setState({ escBtnDisabled: true });
+    setTimeout(() => this.setState({ escBtnDisabled: false }), 1000);
   };
 
   checkScoreIntervalIncrement = (fullRows) => {
@@ -172,7 +181,6 @@ class Tetris extends Component {
     const newScore = incrementScore(fullRows.length) + score;
     const intLevel = incrementSpeed(newScore);
 
-    // console.table({newLevel:intLevel.interval, score:intLevel.level});
     this.state.allTimeIntervals.forEach((interval) => clearInterval(interval));
 
     this.setState({
@@ -276,6 +284,8 @@ class Tetris extends Component {
     const { board } = { ...this.state };
     board.map((item) => (item.color = '#fffefe1f'));
 
+    this.getBestPlayer();
+
     new Promise((resolve) => {
       this.state.allTimeIntervals.forEach((interval) =>
         clearInterval(interval)
@@ -319,18 +329,24 @@ class Tetris extends Component {
   };
 
   handleKeyDown = (_e, ctrlButton = null) => {
-    console.log('event: ', _e.keyCode);
+    // console.log('event: ', _e.keyCode);
     setTimeout(() => {
       this.controlsRef.current.focus();
     }, 1000);
 
-    const { paused, displayHold, displayStartButton } = this.state;
+    const {
+      paused,
+      displayHold,
+      displayStartButton,
+      escBtnDisabled,
+    } = this.state;
 
     // enter
     if (_e.keyCode === 13 && displayStartButton) return this.startGame();
 
     // esc
-    if (_e.keyCode === 27 && !displayStartButton) return this.stopGame();
+    if (_e.keyCode === 27 && !displayStartButton && !escBtnDisabled)
+      return this.stopGame();
 
     if (!paused) {
       // space
@@ -447,6 +463,7 @@ class Tetris extends Component {
       holdedFigure,
       score,
       level,
+      players,
       paused,
       displayStartButton,
       pressedButton,
@@ -455,57 +472,61 @@ class Tetris extends Component {
     } = this.state;
 
     return (
-      <div className='tetris'>
-        <Music paused={paused} level={level} sound={sound} />
-        <div className='widgets'>
-          <Display
-            title={'time'}
-            content={<Timer timerType='crono' isPaused={paused} />}
-            textAlign={'center'}
-          />
-          <Display title={'score'} content={score} textAlign={'center'} />
-          <Display title={'level'} content={level} textAlign={'center'} />
-        </div>
-        <div className='board-wrapper'>
-          <div
-            className='board'
-            onKeyDown={this.handleKeyDown}
-            tabIndex='0'
-            ref={this.controlsRef}
-          >
-            <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
+      <>
+        <div className='tetris'>
+          <Music paused={paused} level={level} sound={sound} />
+          <div className='widgets'>
+            <Display
+              title={'time'}
+              content={<Timer timerType='crono' isPaused={paused} />}
+              textAlign={'center'}
+            />
+            <Display title={'score'} content={score} textAlign={'center'} />
+            <Display title={'level'} content={level} textAlign={'center'} />
           </div>
-          {nextFigure && nextFigure.length > 0 && (
-            <div className='preview-figures-wrapper'>
-              <Display
-                title={'next'}
-                content={<NextFigure nextFigure={nextFigure} />}
-                textAlign={'center'}
-              />
-
-              {holdedFigure && holdedFigure.length > 0 && (
+          <div className='board-wrapper'>
+            <div
+              className='board'
+              onKeyDown={this.handleKeyDown}
+              tabIndex='0'
+              ref={this.controlsRef}
+            >
+              <Greed cols={cols} rows={rows} fillBg={this.fillBg} />
+            </div>
+            {nextFigure && nextFigure.length > 0 && (
+              <div className='preview-figures-wrapper'>
                 <Display
-                  title={'holded'}
-                  content={<NextFigure nextFigure={holdedFigure} />}
+                  title={'next'}
+                  content={<NextFigure nextFigure={nextFigure} />}
                   textAlign={'center'}
                 />
-              )}
-            </div>
-          )}
+
+                {holdedFigure && holdedFigure.length > 0 && (
+                  <Display
+                    title={'holded'}
+                    content={<NextFigure nextFigure={holdedFigure} />}
+                    textAlign={'center'}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+
+          <Controls
+            keyPress={this.handleKeyDown}
+            pressedButton={pressedButton}
+            displayStartButton={displayStartButton}
+            paused={paused}
+            startGame={this.startGame}
+            stopGame={this.stopGame}
+            displayHold={displayHold}
+            holdFigure={this.holdFigure}
+            useHoldedFigure={this.useHoldedFigure}
+          />
         </div>
 
-        <Controls
-          keyPress={this.handleKeyDown}
-          pressedButton={pressedButton}
-          displayStartButton={displayStartButton}
-          paused={paused}
-          startGame={this.startGame}
-          stopGame={this.stopGame}
-          displayHold={displayHold}
-          holdFigure={this.holdFigure}
-          useHoldedFigure={this.useHoldedFigure}
-        />
-      </div>
+        <UsersTable players={players} />
+      </>
     );
   }
 }
