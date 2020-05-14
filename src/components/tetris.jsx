@@ -181,9 +181,9 @@ class Tetris extends Component {
   };
 
   checkScoreIntervalIncrement = (fullRows) => {
-    const { score } = this.state;
+    const { score, level } = this.state;
 
-    const newScore = incrementScore(fullRows.length) + score;
+    const newScore = incrementScore(fullRows.length, level) + score;
     const intLevel = incrementSpeed(newScore);
 
     this.state.allTimeIntervals.forEach((interval) => clearInterval(interval));
