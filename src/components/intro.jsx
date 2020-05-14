@@ -31,11 +31,7 @@ class Intro extends Component {
           maxLength={12}
         />
         {(name && (
-          <button
-            type='submit'
-            className='start-game'
-            // disabled={!name}
-          >
+          <button type='submit' className='start-game'>
             start game
           </button>
         )) || <div className='triangle-up'></div>}

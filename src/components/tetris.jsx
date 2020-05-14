@@ -24,6 +24,7 @@ class Tetris extends Component {
     super(props);
 
     this.controlsRef = React.createRef();
+    this.tableRef = React.createRef();
 
     this.state = {
       rows: 20,
@@ -31,7 +32,6 @@ class Tetris extends Component {
       timeInterval: 1000,
       allTimeIntervals: [],
       level: 1,
-      time: 0,
       paused: true,
       displayStartButton: true,
       escBtnDisabled: true,
@@ -47,6 +47,7 @@ class Tetris extends Component {
         down: false,
         hold: false,
       },
+      gameOver: false,
       players: [],
       bestPlayer: {},
       sound: '',
@@ -147,18 +148,22 @@ class Tetris extends Component {
     }
   };
 
-  getBestPlayer = () => {
-    const { time, level } = this.state;
-    const players = [{ ...this.props.user, level, time }];
-    const savedPlayers = localStorage.getItem('players');
+  getPlayersList = () => {
+    const { time, level, score } = this.state;
+    let players = [{ ...this.props.user, score, level, time }];
+    let savedPlayers = localStorage.getItem('players');
+    savedPlayers = JSON.parse(savedPlayers);
 
     if (savedPlayers && savedPlayers.length)
-      players.push(JSON.parse(savedPlayers));
+      players = [...players, ...savedPlayers];
 
-    const bestPlayer = _.maxBy(players, (item) => item.score);
-    // save users
+    // order users by score & save only the first 100 of them
+    players = _.orderBy(players, ['score'], ['desc']);
+    players = players.slice(0, 101);
+
     localStorage.setItem('players', JSON.stringify(players));
-    this.setState({ players, bestPlayer });
+    this.setState({ players });
+    // const bestPlayer = _.maxBy(players, (item) => item.score);
   };
 
   preventDoubleClick = (_e) => {
@@ -284,7 +289,7 @@ class Tetris extends Component {
     const { board } = { ...this.state };
     board.map((item) => (item.color = '#fffefe1f'));
 
-    this.getBestPlayer();
+    this.getPlayersList();
 
     new Promise((resolve) => {
       this.state.allTimeIntervals.forEach((interval) =>
@@ -297,9 +302,11 @@ class Tetris extends Component {
         currentFigure: [],
         nextFigure: [],
         paused: true,
-        displayStartButton: true,
+        gameOver: true,
       })
     );
+
+    this.tableRef.current.classList.add('disappear');
     this.emitSound('gameover');
   };
 
@@ -455,6 +462,10 @@ class Tetris extends Component {
     setTimeout(() => this.setState({ sound: '' }), 10);
   };
 
+  parsedTime = (parsedTime) => {
+    this.setState({ time: parsedTime });
+  };
+
   render() {
     let {
       rows,
@@ -469,16 +480,23 @@ class Tetris extends Component {
       pressedButton,
       displayHold,
       sound,
+      gameOver,
     } = this.state;
 
     return (
       <>
-        <div className='tetris'>
+        <div className='tetris' ref={this.tableRef}>
           <Music paused={paused} level={level} sound={sound} />
           <div className='widgets'>
             <Display
               title={'time'}
-              content={<Timer timerType='crono' isPaused={paused} />}
+              content={
+                <Timer
+                  timerType='crono'
+                  isPaused={paused}
+                  crono={this.parsedTime}
+                />
+              }
               textAlign={'center'}
             />
             <Display title={'score'} content={score} textAlign={'center'} />
@@ -524,8 +542,7 @@ class Tetris extends Component {
             useHoldedFigure={this.useHoldedFigure}
           />
         </div>
-
-        <UsersTable players={players} />
+        {gameOver && <UsersTable players={players} />}
       </>
     );
   }
