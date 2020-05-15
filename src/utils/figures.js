@@ -194,35 +194,45 @@ function getFigure(figure, position = null) {
   return figures[figure][position ? position : 'up'];
 }
 
-function getRandomFigure(cols) {
+function getFigureColor(figure) {
+  return figures[figure]['color'];
+}
+
+function topCenteredFigure(figureName, cols = 10) {
+  const figure = getFigure(figureName);
+  const figureColor = getFigureColor(figureName);
+
+  let hubs = [];
+  figure.forEach((coord) => {
+    hubs.push({
+      // x: coord[0],
+      x: coord[0] + cols / 2 - 2,
+      y: coord[1],
+      figure: figureName,
+      color: figureColor,
+      position: 'up',
+    });
+  });
+
+  return hubs;
+}
+
+function getRandomFigure(cols = 10) {
   // create array from figures
   let figuresArray = [];
   for (const item in figures) {
-    figuresArray.push([item, figures[item].color]);
+    figuresArray.push(item);
   }
 
   const randomFigure =
     figuresArray[Math.floor(Math.random() * figuresArray.length)];
-  const randomPosition = ['up', 'right', 'down', 'left'][
-    Math.floor(Math.random() * ['up', 'right', 'down', 'left'].length)
-  ];
+  // const randomPosition = ['up', 'right', 'down', 'left'][
+  //   Math.floor(Math.random() * ['up', 'right', 'down', 'left'].length)
+  // ];
+  // randomFigure.push(randomPosition);
+  let figureName = randomFigure[0];
 
-  randomFigure.push(randomPosition);
-
-  let items = [];
-  const figure = getFigure(randomFigure[0]);
-
-  figure.forEach((coord) => {
-    items.push({
-      // x: coord[0],
-      x: coord[0] + cols / 2 - 2,
-      y: coord[1],
-      figure: randomFigure[0],
-      color: randomFigure[1],
-      position: 'up',
-    });
-  });
-  return items;
+  return topCenteredFigure(figureName);
 }
 
 const generateFigure = (figure, color, position) => {
@@ -244,8 +254,6 @@ const generateFigure = (figure, color, position) => {
 function twistFigure(currentFigure) {
   const figUnit = currentFigure[0];
   const shapeUnit = figures[figUnit.figure][figUnit.position][0];
-
-  // console.log('TWIST: currentFigure > ', currentFigure)
 
   let rotate = 'up';
   switch (figUnit.position) {
@@ -279,8 +287,14 @@ function twistFigure(currentFigure) {
     };
     finalFigure.push(piece);
   });
-  // console.log('TWIST: twistedFigure > ', finalFigure)
   return finalFigure;
 }
 
-export { figures, getFigure, getRandomFigure, generateFigure, twistFigure };
+export {
+  figures,
+  getFigure,
+  topCenteredFigure,
+  getRandomFigure,
+  generateFigure,
+  twistFigure,
+};

@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 // deep clone for prevent old state overriting the modified state
 import cloneDeep from 'lodash/cloneDeep';
-import { getRandomFigure, twistFigure } from '../utils/figures';
+import {
+  getRandomFigure,
+  twistFigure,
+  topCenteredFigure,
+} from '../utils/figures';
 import {
   incrementScore,
   incrementSpeed,
@@ -104,7 +108,13 @@ class Tetris extends Component {
     this.setRandomFigure();
     this.setState({ displayStartButton: !displayStartButton, paused: !paused });
     this.startTimer();
-    setInterval(() => this.checkIfNeedCleanRows(), 100);
+
+    const rowCheckInterval = setInterval(
+      () => this.checkIfNeedCleanRows(),
+      100
+    );
+    this.setState({ rowCheckInterval });
+
     this.controlsRef.current.focus();
 
     // emit start event
@@ -127,9 +137,9 @@ class Tetris extends Component {
 
     if (holdedFigure.length === 0 && paused === false) {
       this.setState((prevState) => ({
-        currentFigure: prevState.nextFigure,
-        holdedFigure: prevState.currentFigure,
-        nextFigure: getRandomFigure(this.state.cols),
+        currentFigure: topCenteredFigure(prevState.nextFigure[0]['figure']),
+        holdedFigure: topCenteredFigure(prevState.currentFigure[0]['figure']),
+        nextFigure: getRandomFigure(),
         displayHold: false,
       }));
     }
@@ -140,9 +150,9 @@ class Tetris extends Component {
 
     if (holdedFigure.length !== 0 && paused === false) {
       this.setState((prevState) => ({
-        currentFigure: prevState.holdedFigure,
+        currentFigure: topCenteredFigure(prevState.holdedFigure[0]['figure']),
         holdedFigure: [],
-        nextFigure: getRandomFigure(this.state.cols),
+        nextFigure: topCenteredFigure(prevState.currentFigure[0]['figure']),
         displayHold: true,
       }));
     }
@@ -202,7 +212,6 @@ class Tetris extends Component {
 
     // level up sound
     if (intLevel.level > level) {
-      console.table([`Level:${score}`, `NL:${intLevel.level}`]);
       setTimeout(() => this.emitSound('success'), 200);
     }
 
@@ -300,8 +309,8 @@ class Tetris extends Component {
 
   setRandomFigure = () => {
     this.setState({
-      currentFigure: getRandomFigure(this.state.cols),
-      nextFigure: getRandomFigure(this.state.cols),
+      currentFigure: getRandomFigure(),
+      nextFigure: getRandomFigure(),
     });
   };
 
@@ -328,6 +337,8 @@ class Tetris extends Component {
 
     this.tableRef.current.classList.add('disappear');
     this.emitSound('gameover');
+
+    clearInterval(this.state.rowCheckInterval);
   };
 
   fillBg = (x, y) => {
