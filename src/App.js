@@ -18,9 +18,9 @@ class App extends Component {
     console.log(
       '%c Made with ♥ by Irakli M.',
       `color:white; 
-       font-size:26px;
-       padding:20px;
-       background:black;
+      font-size:26px;
+      padding:20px;
+      background:black;
        border:5px solid tomato;`
     );
   }

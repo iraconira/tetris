@@ -184,7 +184,27 @@ class Tetris extends Component {
     const { score, level } = this.state;
 
     const newScore = incrementScore(fullRows.length, level) + score;
-    const intLevel = incrementSpeed(newScore);
+    const intLevel = incrementSpeed(newScore, level);
+
+    //----- testing
+    // if (level !== intLevel.level) {
+    //   console.log('intLevel: ', intLevel);
+    //   console.log(
+    //     `%c level up!`,
+    //     `color:yellow;
+    //     font-size:20px;
+    //     padding:20px;
+    //     background:black;
+    //     border:5px solid tomato;`
+    //   );
+    //   console.table([`S:${score}`, `L:${level}`, `NL:${intLevel.level}`]);
+    // }
+
+    // level up sound
+    if (intLevel.level > level) {
+      console.table([`Level:${score}`, `NL:${intLevel.level}`]);
+      setTimeout(() => this.emitSound('success'), 200);
+    }
 
     this.state.allTimeIntervals.forEach((interval) => clearInterval(interval));
 
@@ -207,7 +227,7 @@ class Tetris extends Component {
       this.checkScoreIntervalIncrement(rowsToRemove);
       // emit sound
       rowsToRemove.length === 4
-        ? this.emitSound('success')
+        ? this.emitSound('clear')
         : this.emitSound('line');
     }
     // delete the rows that are filled
