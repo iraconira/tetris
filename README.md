@@ -2,5 +2,5 @@
 
 ## References
 
-// background: linkedin.com/in/saranshsinha
-// Interface: dribbble.com/mdm_ooo
+background: linkedin.com/in/saranshsinha
+Interface: dribbble.com/mdm_ooo

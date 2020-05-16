@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import clear from '../sounds/clear.wav';
+import fall from '../sounds/fall.wav';
+import gameover from '../sounds/gameover.wav';
+import line from '../sounds/line.wav';
+import selection from '../sounds/selection.wav';
+import success from '../sounds/success.wav';
+import tetris from '../sounds/tetris.mp3';
 
 class Music extends Component {
   constructor(props) {
@@ -11,13 +18,22 @@ class Music extends Component {
       speed: 1,
       statusLevel: 1,
       volume: 0.5,
+      sounds: {
+        clear,
+        fall,
+        gameover,
+        line,
+        selection,
+        success,
+        tetris,
+      },
     };
 
     this.audioRef = React.createRef();
   }
 
   async componentDidMount() {
-    await this.loadSound('sounds/tetris.mp3');
+    await this.loadSound(tetris);
   }
 
   componentDidUpdate() {
@@ -89,9 +105,9 @@ class Music extends Component {
   };
 
   playSound = (sound) => {
-    const { volume } = this.state;
+    const { volume, sounds } = this.state;
     const audioRef = this.audioRef.current;
-    audioRef.setAttribute('src', `sounds/${sound}.wav`);
+    audioRef.setAttribute('src', sounds[sound]);
     audioRef.volume = volume;
     setTimeout(() => audioRef.play(), 100);
   };
