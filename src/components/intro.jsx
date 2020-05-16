@@ -37,16 +37,8 @@ class Intro extends Component {
         )) || <div className='triangle-up'></div>}
         <div className='instructions'></div>
         <div className='copyright'>
-          <div className='text'>
-            made with <span>&hearts;</span> by
-          </div>
-          <div className='name'>
-            <span className='i'></span>
-            <span className='r'></span>
-            <span className='a'></span>
-            <span className='k'></span>
-            <span className='l'></span>
-            <span className='i'></span>
+          <div className='text-wrapper'>
+            made with <span>&hearts;</span> by irakli m.
           </div>
         </div>
       </form>

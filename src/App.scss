@@ -474,48 +474,14 @@ html {
 .copyright {
   position: absolute;
   bottom: 1rem;
-  flex-flow: nowrap;
   justify-content: center;
-  width: 100%;
-
-  .text {
+  width: 90%;
+  .text-wrapper {
+    margin: 0 auto;
     span {
       color: red;
       font-size: 1rem;
       width: max-content;
-    }
-  }
-  .name {
-    display: inline-flex;
-    transform: scale(0.3);
-    span {
-      background-image: url(/tetrisletters.png);
-      background-repeat: no-repeat;
-      background-size: 300px;
-      height: 37px;
-      position: relative;
-      margin: 5px;
-      // border: 1px solid lightgrey;
-    }
-    .i {
-      background-position: -9px -62px;
-      width: 12px;
-    }
-    .r {
-      background-position: -46px -114px;
-      width: 25px;
-    }
-    .a {
-      background-position: -8px -12px;
-      width: 25px;
-    }
-    .k {
-      background-position: -72px -62px;
-      width: 25px;
-    }
-    .l {
-      background-position: -115px -62px;
-      width: 25px;
     }
   }
 }
