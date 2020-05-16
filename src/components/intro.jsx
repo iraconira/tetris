@@ -22,7 +22,7 @@ class Intro extends Component {
         className='intro'
         onSubmit={(_e) => this.props.handleSubmit(_e, name)}
       >
-        <h1>enter your nickname</h1>
+        <h1>enter your name</h1>
         <input
           className='intro-input'
           type='text'
@@ -36,6 +36,11 @@ class Intro extends Component {
           </button>
         )) || <div className='triangle-up'></div>}
         <div className='instructions'></div>
+        <div className='copyright'>
+          <div className='text-wrapper'>
+            made with <span>&hearts;</span> by irakli m.
+          </div>
+        </div>
       </form>
     );
   }
