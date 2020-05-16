@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Tetris web App",
+  "name": "Tetris web app made by ReactJS",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
