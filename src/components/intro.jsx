@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import instructions from '../images/instructions.png';
 
 class Intro extends Component {
   constructor() {
@@ -35,7 +36,10 @@ class Intro extends Component {
             start game
           </button>
         )) || <div className='triangle-up'></div>}
-        <div className='instructions'></div>
+        <div
+          className='instructions'
+          style={{ backgroundImage: `url(${instructions})` }}
+        ></div>
         <div className='copyright'>
           <div className='text-wrapper'>
             made with <span>&hearts;</span> by irakli m.
