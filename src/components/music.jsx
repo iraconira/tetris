@@ -30,18 +30,12 @@ class Music extends Component {
     };
 
     this.audioRef = React.createRef();
-  }
-
-  async componentDidMount() {
-    await this.loadSound(tetris);
+    this.musicRef = React.createRef();
   }
 
   componentDidUpdate() {
     const { paused, level, sound } = this.props;
-    const { playing, speed, statusLevel, buffer } = this.state;
-
-    // interrupt until sound will loaded
-    if (!buffer) return;
+    const { playing, speed, statusLevel } = this.state;
 
     if (!playing) {
       if (!paused) {
@@ -70,53 +64,29 @@ class Music extends Component {
     }
   }
 
-  loadSound = async (path) => {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioContext = new AudioContext();
-    const request = new XMLHttpRequest();
-    request.open('GET', path, true);
-    request.responseType = 'arraybuffer';
-    // Decode asynchronously
-    request.onload = () => {
-      audioContext.decodeAudioData(request.response, (buffer) => {
-        const source = audioContext.createBufferSource();
-        const gainNode = audioContext.createGain();
-        source.buffer = buffer;
-        source.loop = true;
-        source.start(0);
-        this.setState({ buffer, audioContext, source, gainNode });
-      });
-    };
-    await navigator.mediaDevices.getUserMedia({ audio: true });
-    await request.send();
-  };
+  playTetrisMusic = (start, vol = null) => {
+    const { volume } = this.state;
+    const musicRef = this.musicRef.current;
 
-  playTetrisMusic = (start, speed = 1, vol = null) => {
-    const { audioContext, source, gainNode, volume } = this.state;
+    musicRef.volume = vol ? vol : volume;
+    let playPromise = null;
 
-    source.playbackRate.value = speed;
-
-    gainNode.gain.value = vol ? vol : volume;
+    musicRef.loop = true;
 
     if (start) {
-      source.connect(gainNode).connect(audioContext.destination);
+      playPromise = musicRef.play();
       this.setState({ playing: true });
     } else {
-      source.playbackRate.value = speed;
-      source.disconnect(gainNode);
+      playPromise = musicRef.pause();
       this.setState({ playing: false });
     }
+
+    this.playOnceReady(playPromise);
   };
 
-  playSound = (sound) => {
-    const { volume, sounds } = this.state;
-    const audioRef = this.audioRef.current;
-    audioRef.setAttribute('src', sounds[sound]);
-    audioRef.volume = volume;
-    // setTimeout(() => audioRef.play(), 100);
-    const playPromise = audioRef.play();
-    if (playPromise !== undefined) {
-      playPromise
+  playOnceReady = (romise) => {
+    if (romise !== undefined) {
+      romise
         .then((_) => {
           // Automatic playback started!
           // Show playing UI.
@@ -128,20 +98,29 @@ class Music extends Component {
     }
   };
 
+  playSound = (sound) => {
+    const { volume, sounds } = this.state;
+    const audioRef = this.audioRef.current;
+    audioRef.setAttribute('src', sounds[sound]);
+    audioRef.volume = volume;
+    const playPromise = audioRef.play();
+    this.playOnceReady(playPromise);
+  };
+
   handleVolume = (_e) => {
     const { paused } = this.props;
-    const { speed } = this.state;
 
     const vol = _e.target.value;
     this.setState({ volume: vol });
 
     if (!paused) {
-      this.playTetrisMusic(true, speed, vol);
+      this.playTetrisMusic(true, vol);
     }
     setTimeout(() => document.querySelector('.board').focus(), 100);
   };
 
   render() {
+    const { value, sounds } = this.state;
     return (
       <div id='volume-slider'>
         <input
@@ -150,10 +129,15 @@ class Music extends Component {
           onChange={(_e) => this.handleVolume(_e)}
           min='0'
           max='1'
-          value={this.state.value}
+          value={value}
           step='0.01'
         />
-        <audio ref={this.audioRef} src='' type='audio/wav'></audio>
+        <audio ref={this.audioRef} src='' type='audio/mpeg'></audio>
+        <audio
+          ref={this.musicRef}
+          src={sounds.tetris}
+          type='audio/mpeg'
+        ></audio>
       </div>
     );
   }
