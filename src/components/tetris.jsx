@@ -495,7 +495,6 @@ class Tetris extends Component {
 
   parsedTime = (parsedTime) => {
     this.setState({ time: parsedTime });
-    console.log('parsedTIme: ', parsedTime);
   };
 
   render() {

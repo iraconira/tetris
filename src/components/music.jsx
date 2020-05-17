@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import clear from '../sounds/clear.wav';
-import fall from '../sounds/fall.wav';
-import gameover from '../sounds/gameover.wav';
-import line from '../sounds/line.wav';
-import selection from '../sounds/selection.wav';
-import success from '../sounds/success.wav';
-import tetris from '../sounds/tetris.wav';
+import clear from '../sounds/clear.mp3';
+import fall from '../sounds/fall.mp3';
+import gameover from '../sounds/gameover.mp3';
+import line from '../sounds/line.mp3';
+import selection from '../sounds/selection.mp3';
+import success from '../sounds/success.mp3';
+import tetris from '../sounds/tetris.mp3';
 
 class Music extends Component {
   constructor(props) {
@@ -38,7 +38,10 @@ class Music extends Component {
 
   componentDidUpdate() {
     const { paused, level, sound } = this.props;
-    const { playing, speed, statusLevel } = this.state;
+    const { playing, speed, statusLevel, buffer } = this.state;
+
+    // interrupt until sound will loaded
+    if (!buffer) return;
 
     if (!playing) {
       if (!paused) {
@@ -76,7 +79,6 @@ class Music extends Component {
     // Decode asynchronously
     request.onload = () => {
       audioContext.decodeAudioData(request.response, (buffer) => {
-        // this.playTetrisMusic(audioContext, buffer, 1);
         const source = audioContext.createBufferSource();
         const gainNode = audioContext.createGain();
         source.buffer = buffer;
@@ -90,6 +92,7 @@ class Music extends Component {
 
   playTetrisMusic = (start, speed = 1, vol = null) => {
     const { audioContext, source, gainNode, volume } = this.state;
+
     source.playbackRate.value = speed;
 
     gainNode.gain.value = vol ? vol : volume;
@@ -109,7 +112,19 @@ class Music extends Component {
     const audioRef = this.audioRef.current;
     audioRef.setAttribute('src', sounds[sound]);
     audioRef.volume = volume;
-    setTimeout(() => audioRef.play(), 100);
+    // setTimeout(() => audioRef.play(), 100);
+    const playPromise = audioRef.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then((_) => {
+          // Automatic playback started!
+          // Show playing UI.
+        })
+        .catch((error) => {
+          // Auto-play was prevented
+          // Show paused UI.
+        });
+    }
   };
 
   handleVolume = (_e) => {
