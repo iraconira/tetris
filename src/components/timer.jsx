@@ -19,8 +19,8 @@ class Timer extends Component {
   initCrono = () => {
     setInterval(() => {
       if (!this.props.isPaused) {
-        const parsedTime = this.crono();
         this.setState((prevState) => ({ seconds: prevState.seconds++ }));
+        const parsedTime = this.crono();
         this.props.crono(parsedTime);
       }
     }, 1000);
