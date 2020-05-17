@@ -87,6 +87,7 @@ class Music extends Component {
         this.setState({ buffer, audioContext, source, gainNode });
       });
     };
+    await navigator.mediaDevices.getUserMedia({ audio: true });
     await request.send();
   };
 
