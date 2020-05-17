@@ -5,7 +5,7 @@ import gameover from '../sounds/gameover.wav';
 import line from '../sounds/line.wav';
 import selection from '../sounds/selection.wav';
 import success from '../sounds/success.wav';
-import tetris from '../sounds/tetris.mp3';
+import tetris from '../sounds/tetris.wav';
 
 class Music extends Component {
   constructor(props) {
