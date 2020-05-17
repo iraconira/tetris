@@ -518,7 +518,7 @@ class Tetris extends Component {
     return (
       <>
         <div className='tetris' ref={this.tableRef}>
-          {/* <Music paused={paused} level={level} sound={sound} /> */}
+          <Music paused={paused} level={level} sound={sound} />
           <div className='widgets'>
             <Display
               title={'time'}
