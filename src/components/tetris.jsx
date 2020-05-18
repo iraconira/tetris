@@ -367,6 +367,8 @@ class Tetris extends Component {
   };
 
   handleKeyDown = (_e, ctrlButton = null) => {
+    // prevent zoom in devices on double-tap
+    _e.preventDefault();
     // console.log('event: ', _e.keyCode);
     setTimeout(() => {
       this.controlsRef.current.focus();

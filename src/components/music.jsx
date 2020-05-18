@@ -100,11 +100,9 @@ class Music extends Component {
 
   playSound = (sound) => {
     const { volume, sounds } = this.state;
-    const audioRef = this.audioRef.current;
-    audioRef.setAttribute('src', sounds[sound]);
-    audioRef.volume = volume;
-    const playPromise = audioRef.play();
-    this.playOnceReady(playPromise);
+    const audio = new Audio(sounds[sound]);
+    audio.volume = volume;
+    audio.play();
   };
 
   handleVolume = (_e) => {
@@ -123,6 +121,17 @@ class Music extends Component {
     const { value, sounds } = this.state;
     return (
       <div id='volume-slider'>
+        <span className='volume-icon'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 24 24'
+            fill='darkslategray'
+            width='1rem'
+            height='1rem'
+          >
+            <path d='M14 8.83v6.34L11.83 13H9v-2h2.83L14 8.83M16 4l-5 5H7v6h4l5 5V4z' />
+          </svg>
+        </span>
         <input
           id='volume'
           type='range'
@@ -132,7 +141,17 @@ class Music extends Component {
           value={value}
           step='0.01'
         />
-        <audio ref={this.audioRef} src='' type='audio/mpeg'></audio>
+        <span className='volume-icon'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 24 24'
+            fill='darkslategray'
+            width='1rem'
+            height='1rem'
+          >
+            <path d='M3 9v6h4l5 5V4L7 9H3zm7-.17v6.34L7.83 13H5v-2h2.83L10 8.83zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z' />
+          </svg>
+        </span>
         <audio
           ref={this.musicRef}
           src={sounds.tetris}
