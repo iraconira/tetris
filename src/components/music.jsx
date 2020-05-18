@@ -1,41 +1,26 @@
 import React, { Component } from 'react';
-import clear from '../sounds/clear.mp3';
-import fall from '../sounds/fall.mp3';
-import gameover from '../sounds/gameover.mp3';
-import line from '../sounds/line.mp3';
-import selection from '../sounds/selection.mp3';
-import success from '../sounds/success.mp3';
-import tetris from '../sounds/tetris.mp3';
+import { Howl, Howler } from 'howler';
 
 class Music extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      buffer: null,
-      audioContext: null,
-      source: null,
       playing: false,
-      speed: 1,
-      statusLevel: 1,
-      volume: 0.5,
-      sounds: {
-        clear,
-        fall,
-        gameover,
-        line,
-        selection,
-        success,
-        tetris,
-      },
+      soundRunning: false,
+      audio: {},
     };
 
     this.audioRef = React.createRef();
     this.musicRef = React.createRef();
   }
 
+  componentDidMount() {
+    this.setState({ audio: this.props.audio });
+  }
+
   componentDidUpdate() {
-    const { paused, level, sound } = this.props;
-    const { playing, speed, statusLevel } = this.state;
+    const { paused, sound } = this.props;
+    const { playing, soundRunning } = this.state;
 
     if (!playing) {
       if (!paused) {
@@ -51,74 +36,43 @@ class Music extends Component {
       }
     }
 
-    if (parseInt(level) !== parseInt(statusLevel)) {
-      const newSpeed = speed + 0.01;
-      this.playTetrisMusic(true, newSpeed);
-      this.setState({ statusLevel: level, speed: newSpeed });
-    }
+    if (sound && sound !== '' && !soundRunning) {
+      this.setState({ soundRunning: true });
+      this.playSound(sound);
 
-    if (sound && sound) {
       setTimeout(() => {
-        this.playSound(sound);
-      }, 100);
+        this.setState({ soundRunning: false });
+      }, 500);
     }
   }
 
   playTetrisMusic = (start, vol = null) => {
-    const { volume } = this.state;
-    const musicRef = this.musicRef.current;
-
-    musicRef.volume = vol ? vol : volume;
-    let playPromise = null;
-
-    musicRef.loop = true;
+    const { audio } = this.state;
 
     if (start) {
-      playPromise = musicRef.play();
+      audio.tetris.play();
       this.setState({ playing: true });
     } else {
-      playPromise = musicRef.pause();
+      audio.tetris.pause();
       this.setState({ playing: false });
-    }
-
-    this.playOnceReady(playPromise);
-  };
-
-  playOnceReady = (romise) => {
-    if (romise !== undefined) {
-      romise
-        .then((_) => {
-          // Automatic playback started!
-          // Show playing UI.
-        })
-        .catch((error) => {
-          // Auto-play was prevented
-          // Show paused UI.
-        });
     }
   };
 
   playSound = (sound) => {
-    const { volume, sounds } = this.state;
-    const audio = new Audio(sounds[sound]);
-    audio.volume = volume;
-    audio.play();
+    console.log(sound);
+    const { audio } = this.state;
+    audio[sound].play();
   };
 
   handleVolume = (_e) => {
-    const { paused } = this.props;
-
     const vol = _e.target.value;
-    this.setState({ volume: vol });
+    Howler.volume(vol);
 
-    if (!paused) {
-      this.playTetrisMusic(true, vol);
-    }
     setTimeout(() => document.querySelector('.board').focus(), 100);
   };
 
   render() {
-    const { value, sounds } = this.state;
+    const { value } = this.state;
     return (
       <div id='volume-slider'>
         <span className='volume-icon'>
@@ -152,11 +106,6 @@ class Music extends Component {
             <path d='M3 9v6h4l5 5V4L7 9H3zm7-.17v6.34L7.83 13H5v-2h2.83L10 8.83zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z' />
           </svg>
         </span>
-        <audio
-          ref={this.musicRef}
-          src={sounds.tetris}
-          type='audio/mpeg'
-        ></audio>
       </div>
     );
   }
