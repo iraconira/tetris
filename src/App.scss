@@ -212,7 +212,7 @@ html {
     outline: none;
     position: relative;
     box-shadow: $button-shadow;
-    background: transparent;
+    background: darkslategray;
     color: white;
     font-size: 0.4rem;
     border: none;
@@ -248,23 +248,21 @@ html {
     }
 
     .control-left {
-      span {
-        transform: rotate(-45deg);
+      .arrow {
+        top: 0.1rem;
       }
     }
     .control-down {
       right: 0.5rem;
       top: 2.5rem;
-      span {
-        right: 0.1rem;
-        transform: rotate(-135deg);
+      .arrow {
+        top: 0.2rem;
       }
     }
     .control-right {
       right: 1rem;
-      span {
-        top: 0.2rem;
-        transform: rotate(135deg);
+      .arrow {
+        top: 0.1rem;
       }
     }
   }
@@ -328,10 +326,20 @@ html {
       border-radius: 50%;
     }
 
+    .control-twist {
+      .arrow {
+        top: 0.1rem;
+      }
+    }
+
     .hold {
       top: 2rem;
       font-size: 0.4rem;
       font-weight: 800;
+      .text {
+        position: relative;
+        top: 0.2rem;
+      }
     }
   }
 }
