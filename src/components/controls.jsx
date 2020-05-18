@@ -9,7 +9,7 @@ class Controls extends Component {
   }
 
   addStyle = (button) => {
-    return button ? { background: '#ff000060', transform: 'scale(1.1)' } : {};
+    return button ? { transform: 'scale(0.9)', bosxShadow: 'unset' } : {};
   };
 
   render() {
