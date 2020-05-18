@@ -21,7 +21,8 @@ const incrementScore = (rows, level) => {
 
 const incrementSpeed = (score, level) => {
   let interval = 1000,
-    levelUp = 1200 * 2 * level;
+    // levelUp = 1200 * 2 * level;
+    levelUp = 12 * 2 * level;
 
   if (score >= levelUp) {
     level++;

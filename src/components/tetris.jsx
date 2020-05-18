@@ -212,7 +212,7 @@ class Tetris extends Component {
 
     // level up sound
     if (intLevel.level > level) {
-      setTimeout(() => this.emitSound('success'), 200);
+      setTimeout(() => this.emitSound('success'), 10);
     }
 
     this.state.allTimeIntervals.forEach((interval) => clearInterval(interval));
@@ -492,7 +492,7 @@ class Tetris extends Component {
 
   emitSound = (sound) => {
     this.setState({ sound: sound });
-    setTimeout(() => this.setState({ sound: '' }), 10);
+    setTimeout(() => this.setState({ sound: '' }), 100);
   };
 
   parsedTime = (parsedTime) => {
@@ -519,7 +519,13 @@ class Tetris extends Component {
     return (
       <>
         <div className='tetris' ref={this.tableRef}>
-          <Music paused={paused} level={level} sound={sound} />
+          {/* <Music paused={paused} level={level} sound={sound} /> */}
+          <Music
+            paused={paused}
+            level={level}
+            audio={this.props.audio}
+            sound={sound}
+          />
           <div className='widgets'>
             <Display
               title={'time'}
