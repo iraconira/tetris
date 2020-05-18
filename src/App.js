@@ -4,7 +4,7 @@ import Intro from './components/intro';
 import './App.scss';
 
 //import sounds
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
 import sound_clear from './sounds/clear.mp3';
 import sound_fall from './sounds/fall.mp3';
 import sound_gameover from './sounds/gameover.mp3';

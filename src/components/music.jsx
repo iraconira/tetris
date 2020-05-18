@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Howl, Howler } from 'howler';
+import { Howler } from 'howler';
 
 class Music extends Component {
   constructor(props) {
