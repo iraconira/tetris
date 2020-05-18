@@ -21,6 +21,7 @@ class App extends Component {
     this.state = {
       user: { name: '', score: 0 },
       audio: {},
+      loaded: false,
     };
   }
 
@@ -32,7 +33,7 @@ class App extends Component {
       font-size:26px;
       padding:20px;
       background:black;
-       border:5px solid tomato;`
+      border:5px solid tomato;`
     );
     this.loadSounds();
   }
@@ -78,6 +79,7 @@ class App extends Component {
           gameover,
           tetris,
         },
+        loaded: true,
       });
     });
   };
@@ -92,11 +94,11 @@ class App extends Component {
   };
 
   render() {
-    const { user, audio } = this.state;
+    const { user, audio, loaded } = this.state;
     return (
       <div className='app'>
         {user.name === '' && (
-          <Intro user={user} handleSubmit={this.handleStart} />
+          <Intro user={user} handleSubmit={this.handleStart} loaded={loaded} />
         )}
 
         {user.name !== '' && <Tetris user={user} audio={audio} />}
