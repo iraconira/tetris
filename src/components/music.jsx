@@ -115,8 +115,6 @@ class Music extends Component {
       this.playTetrisMusic(true, vol);
     }
     setTimeout(() => document.querySelector('.board').focus(), 100);
-    alert('volume handled');
-    console.log(`%c volume ${vol}`, 'color:yellow');
   };
 
   render() {
