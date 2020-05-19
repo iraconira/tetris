@@ -566,7 +566,7 @@ class Tetris extends Component {
 
                 {holdedFigure && holdedFigure.length > 0 && (
                   <Display
-                    title={'holded'}
+                    title={'held'}
                     content={<NextFigure nextFigure={holdedFigure} />}
                     textAlign={'center'}
                   />
