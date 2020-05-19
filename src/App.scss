@@ -1,6 +1,8 @@
 // Animated Background
 @import 'animated_background';
+@import 'controls';
 @import 'volume_slider';
+@import 'tetris_loader';
 
 @font-face {
   font-family: 'tetris';
@@ -14,10 +16,15 @@ $tetris: 'tetris', sans-serif;
 $width: 1rem;
 $height: $width;
 $box-shadow: 0px 2px 10px 0px #000 inset;
-$button-shadow: 0px 2px 10px 0px #000;
 $interface-shadow: 1px 1px 10px 2px #000000d6;
 
 html {
+  // disable zoom on double touch
+  touch-action: manipulation;
+  * {
+    touch-action: manipulation;
+  }
+
   font-size: 16px;
   @media only screen and (max-height: 620px) {
     font-size: 15px;
@@ -190,143 +197,6 @@ html {
     opacity: 0.4;
     color: grey;
     // font-size: 12px;
-  }
-}
-
-// controls
-.controls {
-  position: relative;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
-  text-align: center;
-  min-height: 6rem;
-
-  button {
-    outline: none;
-    position: relative;
-    box-shadow: $button-shadow;
-    background: transparent;
-    color: white;
-    font-size: 0.4rem;
-    border: none;
-
-    &:hover {
-      cursor: pointer;
-      background: #161616;
-    }
-    .arrow {
-      display: block;
-      width: fit-content;
-      margin: 0 auto;
-      font-size: 1rem;
-      position: relative;
-    }
-    .text {
-      text-emphasis: center;
-    }
-  }
-
-  .left-block {
-    // border: 1px solid red;
-    position: absolute;
-    top: 0.4rem;
-    left: 0.5rem;
-
-    .control-left,
-    .control-down,
-    .control-right {
-      border-radius: 50%;
-      width: 2.5rem;
-      height: 2.5rem;
-    }
-
-    .control-left {
-      span {
-        transform: rotate(-45deg);
-      }
-    }
-    .control-down {
-      right: 0.5rem;
-      top: 2.5rem;
-      span {
-        right: 0.1rem;
-        transform: rotate(-135deg);
-      }
-    }
-    .control-right {
-      right: 1rem;
-      span {
-        top: 0.2rem;
-        transform: rotate(135deg);
-      }
-    }
-  }
-
-  .middle-block {
-    position: absolute;
-    display: flex;
-    flex-flow: column;
-    justify-content: flex-end;
-    // border: 1px solid red;
-    .start-stop {
-      top: 4.5rem;
-      border: unset;
-      border-radius: 5rem;
-      background: #565454;
-      font-size: 0.4rem;
-      font-weight: 800;
-      width: 3.2rem;
-      padding: 0.4rem 0.5rem 0.2rem;
-      &:hover {
-        cursor: pointer;
-        opacity: 0.8;
-      }
-    }
-    .triangle-up {
-      position: relative;
-      top: 5rem;
-      width: 1rem;
-      height: 1rem;
-      border-left: 1rem solid transparent;
-      border-right: 1rem solid transparent;
-      border-bottom: 1rem solid #ff0000a1;
-      transform: scale(30);
-      animation: bounce alternate 0.5s infinite;
-      margin: 0 auto;
-    }
-
-    @keyframes bounce {
-      from {
-        transform: translateY(0rem);
-      }
-      to {
-        transform: translateY(1rem);
-      }
-    }
-
-    .game-over {
-      background: black !important;
-    }
-  }
-
-  .right-block {
-    // border: 1px solid red;
-    position: absolute;
-    top: 0.4rem;
-    right: 0.5rem;
-    .control-twist,
-    .hold {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-    }
-
-    .hold {
-      top: 2rem;
-      font-size: 0.4rem;
-      font-weight: 800;
-    }
   }
 }
 

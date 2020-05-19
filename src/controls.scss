@@ -1,0 +1,144 @@
+$button-shadow: 0px 2px 10px 0px #000;
+
+.controls {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  text-align: center;
+  min-height: 6rem;
+
+  button {
+    outline: none;
+    position: relative;
+    box-shadow: $button-shadow;
+    background: darkslategray;
+    color: white;
+    font-size: 0.4rem;
+    border: none;
+
+    &:hover {
+      cursor: pointer;
+      background: opacity 0.8;
+    }
+    .arrow {
+      display: block;
+      width: fit-content;
+      margin: 0 auto;
+      font-size: 1rem;
+      position: relative;
+    }
+    .text {
+      text-emphasis: center;
+    }
+  }
+
+  .left-block {
+    // border: 1px solid red;
+    position: absolute;
+    top: 0.4rem;
+    left: 0.5rem;
+
+    .control-left,
+    .control-down,
+    .control-right {
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .control-left {
+      .arrow {
+        top: 0.1rem;
+      }
+    }
+    .control-down {
+      right: 0.5rem;
+      top: 2.5rem;
+      .arrow {
+        top: 0.2rem;
+      }
+    }
+    .control-right {
+      right: 1rem;
+      .arrow {
+        top: 0.1rem;
+      }
+    }
+  }
+
+  .middle-block {
+    position: absolute;
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-end;
+    // border: 1px solid red;
+    .start-stop {
+      top: 4.5rem;
+      border: unset;
+      border-radius: 5rem;
+      background: #565454;
+      font-size: 0.4rem;
+      font-weight: 800;
+      width: 3.2rem;
+      padding: 0.4rem 0.5rem 0.2rem;
+      &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+      }
+    }
+    .triangle-up {
+      position: relative;
+      top: 5rem;
+      width: 1rem;
+      height: 1rem;
+      border-left: 1rem solid transparent;
+      border-right: 1rem solid transparent;
+      border-bottom: 1rem solid #ff0000a1;
+      transform: scale(30);
+      animation: bounce alternate 0.5s infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes bounce {
+      from {
+        transform: translateY(0rem);
+      }
+      to {
+        transform: translateY(1rem);
+      }
+    }
+
+    .game-over {
+      background: black !important;
+    }
+  }
+
+  .right-block {
+    // border: 1px solid red;
+    position: absolute;
+    top: 0.4rem;
+    right: 0.5rem;
+    .control-twist,
+    .hold {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+    }
+
+    .control-twist {
+      .arrow {
+        top: 0.1rem;
+      }
+    }
+
+    .hold {
+      top: 2rem;
+      font-size: 0.4rem;
+      font-weight: 800;
+      .text {
+        position: relative;
+      }
+    }
+  }
+}

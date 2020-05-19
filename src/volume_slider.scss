@@ -1,4 +1,6 @@
 #volume-slider {
+  display: flex;
+  flex-flow: nowrap;
   margin: 0 4rem;
   input[type='range'] {
     width: 100%;
@@ -9,12 +11,6 @@
     cursor: pointer;
     &:focus {
       outline: none;
-    }
-    &:before {
-      content: '🔇';
-    }
-    &:after {
-      content: '🔊';
     }
   }
   input[type='range'],
@@ -32,8 +28,11 @@
     height: 0.8rem;
     bottom: 0.3rem;
     width: 0.8rem;
-    background: white;
+    background: darkslategray;
     border-radius: 50%;
     border: 2px solid #000000;
+  }
+  .volume-icon {
+    margin: 0.1rem;
   }
 }
