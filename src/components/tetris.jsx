@@ -212,7 +212,7 @@ class Tetris extends Component {
 
     // level up sound
     if (intLevel.level > level) {
-      setTimeout(() => this.emitSound('success'), 10);
+      setTimeout(() => this.emitSound('success'), 20);
     }
 
     this.state.allTimeIntervals.forEach((interval) => clearInterval(interval));
@@ -235,9 +235,15 @@ class Tetris extends Component {
     if (rowsToRemove && rowsToRemove.length) {
       this.checkScoreIntervalIncrement(rowsToRemove);
       // emit sound
-      rowsToRemove.length === 4
-        ? this.emitSound('clear')
-        : this.emitSound('line');
+      // rowsToRemove.length === 4
+      //   ? this.emitSound('clear')
+      //   : this.emitSound('line');
+
+      if (rowsToRemove.length === 4) {
+        setTimeout(() => this.emitSound('clear'), 30);
+      } else {
+        setTimeout(() => this.emitSound('line'), 30);
+      }
     }
     // delete the rows that are filled
     this.setState({ board: removeFilledRows(board, cols, rowsToRemove) });
@@ -294,7 +300,7 @@ class Tetris extends Component {
         this.setState({ allTimeIntervals });
 
         // make sound
-        this.emitSound('fall');
+        setTimeout(() => this.emitSound('fall'), 200);
 
         return;
       }
@@ -336,7 +342,7 @@ class Tetris extends Component {
     );
 
     this.tableRef.current.classList.add('disappear');
-    this.emitSound('gameover');
+    setTimeout(() => this.emitSound('gameover'), 100);
 
     clearInterval(this.state.rowCheckInterval);
   };
@@ -397,7 +403,7 @@ class Tetris extends Component {
 
       // ctrl
       if (_e.keyCode === 17 || ctrlButton === 'hold' || ctrlButton === 'use') {
-        this.emitSound('selection');
+        setTimeout(() => this.emitSound('selection'), 15);
         if (displayHold) {
           this.lightedButton('hold');
           return this.holdFigure();
@@ -492,7 +498,7 @@ class Tetris extends Component {
 
   emitSound = (sound) => {
     this.setState({ sound: sound });
-    setTimeout(() => this.setState({ sound: '' }), 100);
+    setTimeout(() => this.setState({ sound: '' }), 10);
   };
 
   parsedTime = (parsedTime) => {

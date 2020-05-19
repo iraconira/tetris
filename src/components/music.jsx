@@ -59,7 +59,6 @@ class Music extends Component {
   };
 
   playSound = (sound) => {
-    console.log(sound);
     const { audio } = this.state;
     audio[sound].play();
   };
