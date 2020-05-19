@@ -1,5 +1,11 @@
 # Tetris web app
 
+## Demo
+
+You can play the game here:
+
+[Tetris by Irakli M.](https://iraklimt.gitlab.io/tetris/)
+
 ## Abstract
 
 The main goal of this project is to reproduce the mythical tetris game adapted to the web technology testing my knowledge and developer skills as well as create a funny and main browsers/devices compatible game.
@@ -27,7 +33,7 @@ In the keyboard:
 - Move Right: `Right arrow key`
 - Move Down: `Down arrow key`
 
-![](images/instructions.png)
+![](src/images/instructions.png)
 
 ## References
 
