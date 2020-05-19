@@ -27,7 +27,7 @@ In the keyboard:
 - Move Right: `Right arrow key`
 - Move Down: `Down arrow key`
 
-![](images/instructions.png)
+![](src/images/instructions.png)
 
 ## References
 
